@@ -1,0 +1,11 @@
+# container + python env
+*.sif
+.pyenv
+*.egg-info
+
+# docs
+doc/build
+doc/_index.rst
+
+# miscellaneous
+__pycache__
