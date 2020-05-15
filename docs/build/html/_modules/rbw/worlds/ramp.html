@@ -1,0 +1,205 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>rbw.worlds.ramp &#8212; rbw  documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for rbw.worlds.ramp</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">rbw</span> <span class="kn">import</span> <span class="n">np</span>
+<span class="kn">from</span> <span class="nn">rbw.shapes</span> <span class="kn">import</span> <span class="n">Block</span>
+<span class="kn">from</span> <span class="nn">rbw.worlds</span> <span class="kn">import</span> <span class="n">World</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+
+<div class="viewcode-block" id="pct_to_coord"><a class="viewcode-back" href="../../../rbw.worlds.html#rbw.worlds.ramp.pct_to_coord">[docs]</a><span class="k">def</span> <span class="nf">pct_to_coord</span><span class="p">(</span><span class="n">mag</span><span class="p">,</span> <span class="n">angle</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+    <span class="n">x_offset</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">*</span> <span class="n">mag</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">*</span> <span class="n">z</span><span class="p">)</span>
+    <span class="n">z_offset</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">*</span> <span class="nb">abs</span><span class="p">(</span><span class="n">mag</span><span class="p">))</span> <span class="o">+</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">*</span> <span class="n">z</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x_offset</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">z_offset</span><span class="p">])</span></div>
+
+<span class="n">default_phys</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;lateralFriction&#39;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
+                <span class="s1">&#39;density&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">}</span>
+
+<span class="n">table_dims</span> <span class="o">=</span> <span class="p">[</span><span class="mf">3.5</span><span class="p">,</span><span class="mf">1.8</span><span class="p">,</span><span class="mf">0.1</span><span class="p">]</span>
+<span class="n">ramp_dims</span> <span class="o">=</span> <span class="p">[</span><span class="mf">3.5</span><span class="p">,</span><span class="mf">1.8</span><span class="p">,</span><span class="mf">0.1</span><span class="p">]</span>
+
+<div class="viewcode-block" id="default_ramp"><a class="viewcode-back" href="../../../rbw.worlds.html#rbw.worlds.ramp.default_ramp">[docs]</a><span class="k">def</span> <span class="nf">default_ramp</span><span class="p">():</span>
+    <span class="n">scene</span> <span class="o">=</span> <span class="n">RampWorld</span><span class="p">(</span><span class="n">table_dims</span><span class="p">,</span> <span class="n">ramp_dims</span><span class="p">,</span>
+                      <span class="n">ramp_angle</span> <span class="o">=</span> <span class="mi">30</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mf">180.</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">scene</span></div>
+
+<div class="viewcode-block" id="RampWorld"><a class="viewcode-back" href="../../../rbw.worlds.html#rbw.worlds.ramp.RampWorld">[docs]</a><span class="k">class</span> <span class="nc">RampWorld</span><span class="p">(</span><span class="n">World</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Describes a ramp scene</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table_dims</span><span class="p">,</span> <span class="n">ramp_dims</span><span class="p">,</span> <span class="n">objects</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">ramp_angle</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">table_phys</span> <span class="o">=</span> <span class="n">default_phys</span><span class="p">,</span>
+                 <span class="n">ramp_phys</span> <span class="o">=</span> <span class="n">default_phys</span><span class="p">):</span>
+        <span class="c1"># for legacy support</span>
+        <span class="c1"># pad dimensions with z</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">table_dims</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">table_dims</span> <span class="o">=</span> <span class="p">[</span><span class="o">*</span><span class="n">table_dims</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">]</span>
+            <span class="n">ramp_dims</span> <span class="o">=</span> <span class="p">[</span><span class="o">*</span><span class="n">ramp_dims</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">]</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="n">Block</span><span class="p">(</span><span class="s1">&#39;table&#39;</span><span class="p">,</span> <span class="n">table_dims</span><span class="p">,</span> <span class="n">table_phys</span><span class="p">)</span>
+        <span class="c1"># We want the table surface to be the xy plane @ z = 0</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">pct_to_coord</span><span class="p">(</span><span class="n">table_dims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mf">0.5</span> <span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.05</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">table</span> <span class="o">=</span> <span class="n">table</span>
+        <span class="n">ramp</span> <span class="o">=</span> <span class="n">Block</span><span class="p">(</span><span class="s1">&#39;ramp&#39;</span><span class="p">,</span> <span class="n">ramp_dims</span><span class="p">,</span> <span class="n">ramp_phys</span><span class="p">,</span>
+                                <span class="n">angle</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ramp_angle</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="n">ramp</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">pct_to_coord</span><span class="p">(</span><span class="n">ramp_dims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">),</span> <span class="n">ramp_angle</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.05</span><span class="p">)</span>
+        <span class="c1"># raised slightly to prevent snagging</span>
+        <span class="n">ramp</span><span class="o">.</span><span class="n">position</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1E-2</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ramp</span> <span class="o">=</span> <span class="n">ramp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ramp_angle</span> <span class="o">=</span> <span class="n">ramp_angle</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">objects</span> <span class="o">=</span> <span class="n">objects</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initial_pos</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">objects</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objects</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objects</span>
+
+    <span class="nd">@objects</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">objects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_objects</span> <span class="o">=</span> <span class="n">v</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">initial_pos</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initial_pos</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initial_pos</span>
+
+    <span class="nd">@initial_pos</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">initial_pos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initial_pos</span> <span class="o">=</span> <span class="n">v</span>
+
+<div class="viewcode-block" id="RampWorld.add_object"><a class="viewcode-back" href="../../../rbw.worlds.html#rbw.worlds.ramp.RampWorld.add_object">[docs]</a>    <span class="k">def</span> <span class="nf">add_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">place</span><span class="p">):</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">dimensions</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c1"># on table</span>
+        <span class="k">if</span> <span class="n">place</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">mag</span> <span class="o">=</span> <span class="n">place</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">table</span><span class="o">.</span><span class="n">dimensions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">angle</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># on ramp</span>
+        <span class="k">elif</span> <span class="n">place</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">place</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">mag</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">place</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">ramp</span><span class="o">.</span><span class="n">dimensions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">angle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ramp_angle</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Place not found&#39;</span><span class="p">)</span>
+
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">pct_to_coord</span><span class="p">(</span><span class="n">mag</span><span class="p">,</span> <span class="n">angle</span><span class="p">,</span> <span class="n">z</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">pos</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">orientation</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">angle</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">objects</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">objects</span>
+        <span class="n">objects</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">objects</span> <span class="o">=</span> <span class="n">objects</span>
+        <span class="n">initial_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_pos</span>
+        <span class="n">initial_pos</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">place</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initial_pos</span> <span class="o">=</span> <span class="n">initial_pos</span></div>
+
+<div class="viewcode-block" id="RampWorld.serialize"><a class="viewcode-back" href="../../../rbw.worlds.html#rbw.worlds.ramp.RampWorld.serialize">[docs]</a>    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># add &#39;objects&#39;</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span>
+        <span class="n">d</span><span class="p">[</span><span class="s1">&#39;ramp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ramp</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span>
+        <span class="n">d</span><span class="p">[</span><span class="s1">&#39;table&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">table</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span>
+        <span class="n">d</span><span class="p">[</span><span class="s1">&#39;initial_pos&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_pos</span>
+        <span class="k">return</span> <span class="n">d</span></div></div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">rbw</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../page.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rbw.html">rbw package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Mario Belledonne.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,196 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>rbw.worlds package &#8212; rbw  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="rbw.utils package" href="rbw.utils.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-rbw.worlds">
+<span id="rbw-worlds-package"></span><h1>rbw.worlds package<a class="headerlink" href="#module-rbw.worlds" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-rbw.worlds.ramp">
+<span id="rbw-worlds-ramp-module"></span><h2>rbw.worlds.ramp module<a class="headerlink" href="#module-rbw.worlds.ramp" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="rbw.worlds.ramp.RampWorld">
+<em class="property">class </em><code class="sig-prename descclassname">rbw.worlds.ramp.</code><code class="sig-name descname">RampWorld</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">table_dims</span></em>, <em class="sig-param"><span class="n">ramp_dims</span></em>, <em class="sig-param"><span class="n">objects</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ramp_angle</span><span class="o">=</span><span class="default_value">0.0</span></em>, <em class="sig-param"><span class="n">table_phys</span><span class="o">=</span><span class="default_value">{'density': 0.0, 'lateralFriction': 0.2}</span></em>, <em class="sig-param"><span class="n">ramp_phys</span><span class="o">=</span><span class="default_value">{'density': 0.0, 'lateralFriction': 0.2}</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/worlds/ramp.html#RampWorld"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.worlds.ramp.RampWorld" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#rbw.worlds.world.World" title="rbw.worlds.world.World"><code class="xref py py-class docutils literal notranslate"><span class="pre">rbw.worlds.world.World</span></code></a></p>
+<p>Describes a ramp scene</p>
+<dl class="py method">
+<dt id="rbw.worlds.ramp.RampWorld.add_object">
+<code class="sig-name descname">add_object</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">place</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/worlds/ramp.html#RampWorld.add_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.worlds.ramp.RampWorld.add_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds objects to the world</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="rbw.worlds.ramp.RampWorld.initial_pos">
+<em class="property">property </em><code class="sig-name descname">initial_pos</code><a class="headerlink" href="#rbw.worlds.ramp.RampWorld.initial_pos" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="rbw.worlds.ramp.RampWorld.objects">
+<em class="property">property </em><code class="sig-name descname">objects</code><a class="headerlink" href="#rbw.worlds.ramp.RampWorld.objects" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a <cite>dict</cite> of added objects</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="rbw.worlds.ramp.RampWorld.serialize">
+<code class="sig-name descname">serialize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/worlds/ramp.html#RampWorld.serialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.worlds.ramp.RampWorld.serialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a json-serialized context of the world</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="rbw.worlds.ramp.default_ramp">
+<code class="sig-prename descclassname">rbw.worlds.ramp.</code><code class="sig-name descname">default_ramp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/worlds/ramp.html#default_ramp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.worlds.ramp.default_ramp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="rbw.worlds.ramp.pct_to_coord">
+<code class="sig-prename descclassname">rbw.worlds.ramp.</code><code class="sig-name descname">pct_to_coord</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mag</span></em>, <em class="sig-param"><span class="n">angle</span></em>, <em class="sig-param"><span class="n">z</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/worlds/ramp.html#pct_to_coord"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.worlds.ramp.pct_to_coord" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-rbw.worlds.world">
+<span id="rbw-worlds-world-module"></span><h2>rbw.worlds.world module<a class="headerlink" href="#module-rbw.worlds.world" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="rbw.worlds.world.World">
+<em class="property">class </em><code class="sig-prename descclassname">rbw.worlds.world.</code><code class="sig-name descname">World</code><a class="reference internal" href="_modules/rbw/worlds/world.html#World"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.worlds.world.World" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<dl class="py method">
+<dt id="rbw.worlds.world.World.add_object">
+<em class="property">abstract </em><code class="sig-name descname">add_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/worlds/world.html#World.add_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.worlds.world.World.add_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds objects to the world</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="rbw.worlds.world.World.objects">
+<em class="property">abstract property </em><code class="sig-name descname">objects</code><a class="headerlink" href="#rbw.worlds.world.World.objects" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a <cite>dict</cite> of added objects</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="rbw.worlds.world.World.serialize">
+<em class="property">abstract </em><code class="sig-name descname">serialize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/worlds/world.html#World.serialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.worlds.world.World.serialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a json-serialized context of the world</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">rbw</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="page.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="rbw.html">rbw package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="rbw.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="rbw.shapes.html">rbw.shapes package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rbw.simulation.html">rbw.simulation package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rbw.utils.html">rbw.utils package</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">rbw.worlds package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-rbw.worlds.ramp">rbw.worlds.ramp module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-rbw.worlds.world">rbw.worlds.world module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="rbw.html">rbw package</a><ul>
+      <li>Previous: <a href="rbw.utils.html" title="previous chapter">rbw.utils package</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Mario Belledonne.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/rbw.worlds.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

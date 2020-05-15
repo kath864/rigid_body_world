@@ -1,0 +1,233 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>rbw.utils package &#8212; rbw  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="rbw.worlds package" href="rbw.worlds.html" />
+    <link rel="prev" title="rbw.simulation package" href="rbw.simulation.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-rbw.utils">
+<span id="rbw-utils-package"></span><h1>rbw.utils package<a class="headerlink" href="#module-rbw.utils" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-rbw.utils.encoders">
+<span id="rbw-utils-encoders-module"></span><h2>rbw.utils.encoders module<a class="headerlink" href="#module-rbw.utils.encoders" title="Permalink to this headline">¶</a></h2>
+<p>Defines JSON encoders used throughout the project</p>
+<dl class="py class">
+<dt id="rbw.utils.encoders.NpEncoder">
+<em class="property">class </em><code class="sig-prename descclassname">rbw.utils.encoders.</code><code class="sig-name descname">NpEncoder</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">skipkeys</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">ensure_ascii</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">check_circular</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">allow_nan</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">sort_keys</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">indent</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">separators</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/utils/encoders.html#NpEncoder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.utils.encoders.NpEncoder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">json.encoder.JSONEncoder</span></code></p>
+<p>Encodes numpy elements for json</p>
+<dl class="py method">
+<dt id="rbw.utils.encoders.NpEncoder.default">
+<code class="sig-name descname">default</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/utils/encoders.html#NpEncoder.default"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.utils.encoders.NpEncoder.default" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implement this method in a subclass such that it returns
+a serializable object for <code class="docutils literal notranslate"><span class="pre">o</span></code>, or calls the base implementation
+(to raise a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code>).</p>
+<p>For example, to support arbitrary iterators, you could
+implement default like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">iterable</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span>
+    <span class="c1"># Let the base class default method raise the TypeError</span>
+    <span class="k">return</span> <span class="n">JSONEncoder</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-rbw.utils.ffmpeg">
+<span id="rbw-utils-ffmpeg-module"></span><h2>rbw.utils.ffmpeg module<a class="headerlink" href="#module-rbw.utils.ffmpeg" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="rbw.utils.ffmpeg.blank">
+<code class="sig-prename descclassname">rbw.utils.ffmpeg.</code><code class="sig-name descname">blank</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">src</span></em>, <em class="sig-param"><span class="n">out</span></em>, <em class="sig-param"><span class="n">dur</span></em>, <em class="sig-param"><span class="n">fps</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/utils/ffmpeg.html#blank"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.utils.ffmpeg.blank" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="rbw.utils.ffmpeg.chain">
+<code class="sig-prename descclassname">rbw.utils.ffmpeg.</code><code class="sig-name descname">chain</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmds</span></em>, <em class="sig-param"><span class="n">args</span></em>, <em class="sig-param"><span class="n">source</span></em>, <em class="sig-param"><span class="n">out</span></em>, <em class="sig-param"><span class="n">suffix</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/utils/ffmpeg.html#chain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.utils.ffmpeg.chain" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="rbw.utils.ffmpeg.concat">
+<code class="sig-prename descclassname">rbw.utils.ffmpeg.</code><code class="sig-name descname">concat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">out</span></em>, <em class="sig-param"><span class="n">a</span></em>, <em class="sig-param"><span class="n">reverse</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/utils/ffmpeg.html#concat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.utils.ffmpeg.concat" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="rbw.utils.ffmpeg.continous">
+<code class="sig-prename descclassname">rbw.utils.ffmpeg.</code><code class="sig-name descname">continous</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">source</span></em>, <em class="sig-param"><span class="n">out</span></em>, <em class="sig-param"><span class="n">start</span></em>, <em class="sig-param"><span class="n">vframes</span></em>, <em class="sig-param"><span class="n">fps</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/utils/ffmpeg.html#continous"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.utils.ffmpeg.continous" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="rbw.utils.ffmpeg.continous_movie">
+<code class="sig-prename descclassname">rbw.utils.ffmpeg.</code><code class="sig-name descname">continous_movie</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">source</span></em>, <em class="sig-param"><span class="n">out</span></em>, <em class="sig-param"><span class="n">fps</span><span class="o">=</span><span class="default_value">60</span></em>, <em class="sig-param"><span class="n">vframes</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/utils/ffmpeg.html#continous_movie"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.utils.ffmpeg.continous_movie" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="rbw.utils.ffmpeg.extend">
+<code class="sig-prename descclassname">rbw.utils.ffmpeg.</code><code class="sig-name descname">extend</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">source</span></em>, <em class="sig-param"><span class="n">out</span></em>, <em class="sig-param"><span class="n">dur</span></em>, <em class="sig-param"><span class="n">fps</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/utils/ffmpeg.html#extend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.utils.ffmpeg.extend" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="rbw.utils.ffmpeg.pause">
+<code class="sig-prename descclassname">rbw.utils.ffmpeg.</code><code class="sig-name descname">pause</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">source</span></em>, <em class="sig-param"><span class="n">vframes</span></em>, <em class="sig-param"><span class="n">fps</span></em>, <em class="sig-param"><span class="n">loc</span></em>, <em class="sig-param"><span class="n">dur</span></em>, <em class="sig-param"><span class="n">out</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/utils/ffmpeg.html#pause"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.utils.ffmpeg.pause" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="rbw.utils.ffmpeg.paused_movie">
+<code class="sig-prename descclassname">rbw.utils.ffmpeg.</code><code class="sig-name descname">paused_movie</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">source</span></em>, <em class="sig-param"><span class="n">out</span></em>, <em class="sig-param"><span class="n">fps</span><span class="o">=</span><span class="default_value">60</span></em>, <em class="sig-param"><span class="n">loc</span><span class="o">=</span><span class="default_value">20</span></em>, <em class="sig-param"><span class="n">dur</span><span class="o">=</span><span class="default_value">0.5</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/utils/ffmpeg.html#paused_movie"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.utils.ffmpeg.paused_movie" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="rbw.utils.ffmpeg.run_cmd">
+<code class="sig-prename descclassname">rbw.utils.ffmpeg.</code><code class="sig-name descname">run_cmd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cmds</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/utils/ffmpeg.html#run_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.utils.ffmpeg.run_cmd" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="rbw.utils.ffmpeg.stimuli">
+<code class="sig-prename descclassname">rbw.utils.ffmpeg.</code><code class="sig-name descname">stimuli</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">a</span></em>, <em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">fps</span></em>, <em class="sig-param"><span class="n">dur</span></em>, <em class="sig-param"><span class="n">out</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/utils/ffmpeg.html#stimuli"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.utils.ffmpeg.stimuli" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="rbw.utils.ffmpeg.stimuli_movie">
+<code class="sig-prename descclassname">rbw.utils.ffmpeg.</code><code class="sig-name descname">stimuli_movie</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">a</span></em>, <em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">out</span></em>, <em class="sig-param"><span class="n">fps</span><span class="o">=</span><span class="default_value">60</span></em>, <em class="sig-param"><span class="n">dur</span><span class="o">=</span><span class="default_value">0.5</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/utils/ffmpeg.html#stimuli_movie"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.utils.ffmpeg.stimuli_movie" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-rbw.utils.render">
+<span id="rbw-utils-render-module"></span><h2>rbw.utils.render module<a class="headerlink" href="#module-rbw.utils.render" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="rbw.utils.render.make_args">
+<code class="sig-prename descclassname">rbw.utils.render.</code><code class="sig-name descname">make_args</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">args_d</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/utils/render.html#make_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.utils.render.make_args" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="rbw.utils.render.render">
+<code class="sig-prename descclassname">rbw.utils.render.</code><code class="sig-name descname">render</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/utils/render.html#render"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.utils.render.render" title="Permalink to this definition">¶</a></dt>
+<dd><p>Subprocess call to blender</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">rbw</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="page.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="rbw.html">rbw package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="rbw.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="rbw.shapes.html">rbw.shapes package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rbw.simulation.html">rbw.simulation package</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">rbw.utils package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-rbw.utils.encoders">rbw.utils.encoders module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-rbw.utils.ffmpeg">rbw.utils.ffmpeg module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-rbw.utils.render">rbw.utils.render module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="rbw.worlds.html">rbw.worlds package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="rbw.html">rbw package</a><ul>
+      <li>Previous: <a href="rbw.simulation.html" title="previous chapter">rbw.simulation package</a></li>
+      <li>Next: <a href="rbw.worlds.html" title="next chapter">rbw.worlds package</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Mario Belledonne.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/rbw.utils.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

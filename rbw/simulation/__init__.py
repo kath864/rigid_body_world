@@ -1,3 +1,7 @@
+""" High-level interface for rigid body physics using pybullet.
+"""
+
+
 import pybullet
 
 from .sim import Sim
