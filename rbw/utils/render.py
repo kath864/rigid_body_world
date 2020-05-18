@@ -6,10 +6,13 @@ import argparse
 import subprocess
 from collections.abc import Iterable
 
+from .encoders import NpEncoder
+
 #######################################################################
 # Interface
 #######################################################################
 
+# TODO document this
 def render(**kwargs):
     """ Subprocess call to blender
     """
@@ -27,6 +30,11 @@ def render(**kwargs):
         json.dump(kwargs.pop('scene'), temp,
                   cls = NpEncoder)
 
+    if 'exec' in kwargs:
+        blend_exec = kwargs.pop('exec')
+    else:
+        blend_exec = 'blender'
+
     if 'blend' in kwargs:
         blend_file = kwargs.pop('blend')
     else:
@@ -42,7 +50,7 @@ def render(**kwargs):
     else:
         threads = len(os.sched_getaffinity(0))
 
-    _cmd = cmd.format(blend_file, render_path, threads)
+    _cmd = cmd.format(blend_exec, blend_file, render_path, threads)
     _cmd = shlex.split(_cmd)
     _cmd += make_args(kwargs)
     _cmd += ['--trace', t_path]
@@ -55,7 +63,7 @@ def render(**kwargs):
 #######################################################################
 
 # takes the blend file and the bpy script
-cmd = 'blender --verbose 2 -noaudio --background {0!s} -P {1!s} -t {2:d}'
+cmd = '{0!s} --verbose 2 -noaudio --background {1!s} -P {2!s} -t {3:d}'
 
 def make_args(args_d):
     cmd = ['--', '--save_world']

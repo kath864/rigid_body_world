@@ -8,7 +8,12 @@ class MarbleSim(Sim):
     """
     Handles physics for `rbw.shapes.MarbleWorld`
 
+
+    Objects with an initial velocity are configured.
+
     Defines a method `make_table` to describe a table top with bounderies along each edge.
+
+
     """
 
     def __init__(self, scene_json, client):
@@ -37,9 +42,13 @@ class MarbleSim(Sim):
         self.resetSimulation()
         self.setGravity(0, 0, -10)
         self.make_table(w['table'])
+        init_lin_vel = w['init_lin_vel']
         d = {}
         for obj,data in w['objects'].items():
             d[obj] = self.make_obj(data)
+            if obj in w['init_lin_vel']:
+                v = init_lin_vel[obj]
+                self.resetBaseVelocity(d[obj], linearVelocity = v)
         self._world = d
 
 

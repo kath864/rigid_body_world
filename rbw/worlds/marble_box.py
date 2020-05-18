@@ -38,12 +38,12 @@ class MarbleWorld(World):
         # pad dimensions with z
         if len(table_dims) == 2:
             table_dims = [*table_dims, 0.1]
-            ramp_dims = [*ramp_dims, 0.1]
         table = Block('table', table_dims, table_phys)
         # We want the table surface to be the xy plane @ z = 0
         table.position = [0, 0, table_dims[2]*-0.5]
         self.table = table
         self.objects = objects
+        self.init_vel = {}
 
     @property
     def objects(self):
@@ -55,7 +55,8 @@ class MarbleWorld(World):
             v = OrderedDict()
         self._objects = v
 
-    def add_object(self, name, obj, x, y):
+    def add_object(self, name, obj, x, y,
+                   lin_vel = None):
         """ Places objects on the table
 
         Objects will be placed directly on the table's surface.
@@ -80,6 +81,10 @@ class MarbleWorld(World):
         objects[name] = obj
         self.objects = objects
 
+        if not (lin_vel is None):
+            self.init_vel[name] = lin_vel
+
+
     def serialize(self):
         """ Serializes an instance of `MarbleWorld`
 
@@ -97,4 +102,5 @@ class MarbleWorld(World):
         # add 'objects'
         d = super().serialize()
         d['table'] = self.table.serialize()
+        d['init_lin_vel'] = self.init_vel
         return d

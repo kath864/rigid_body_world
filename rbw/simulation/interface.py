@@ -150,7 +150,7 @@ def clear_sim(sim_map):
 
 def clear_client(cid):
     """Clean up connection if not already done."""
-    pybullet.disconnect(physicsClientId=client)
+    pybullet.disconnect(physicsClientId=cid)
 
 def run_mc_trace(sim_map, state = None, fps = 60,
                  time_scale = 1.0):
