@@ -34,6 +34,8 @@ class Ball(Shape):
     @dimensions.setter
     def dimensions(self, value):
         v = np.asarray(value)
-        if  v.size != 1:
-            raise ValueError('Scale must represent radius of sphere')
+        if  v.size == 1:
+            v = np.repeat(v, 3)
+        if v.size != 3:
+            raise ValueError('Dimensions must be in xyz')
         self._dimensions = v

@@ -4,6 +4,7 @@ Implemented as functions rather than classes to facilitate cross-language suppor
 """
 from rbw import np
 from . import pybullet
+from .sim import clean_params
 
 import time
 import operator as op
@@ -24,27 +25,31 @@ def init_client(debug = False, **kwargs):
     return cid
 
 def init_sim(sim, data, cid):
-    """ Loads a world into a client and returns an object map
+    """ Loads a world into a client and returns an sim map
 
     :param sim: A `Sim` class
     :param data: json-serialized scene data to be parsed by `sim`
     :param cid: The client id to using for `sim`
     """
     s = sim(data, cid)
-    return s.world
+    return s.serialize()
 
-def update_world(sim, client, object_map, new_world):
+def update_world(sim_map, new_world):
     """ Updates the world's physical parameters
 
     :param client: Pybullet client id
     :param object_map: The object name -> object id `dict`
     :new_world: A serialized scene containing new physical properties
     """
-    for obj_key, obj_id in object_map.items():
-        sim.update_obj(obj_id, new_world[obj_key], client)
+    client = sim_map['client']
+    obj_map = sim_map['world']
+    for obj_key, obj_id in obj_map.items():
+        if obj_key in new_world:
+            params = new_world[obj_key]
+            _update_obj(obj_id, params, client)
 
 
-def apply_state(client, object_ids, state):
+def apply_state(sim_map, key_order, state):
     """ Applies a state matrix to each object reported
 
     The expected dimensions of state are obsxSTATE
@@ -55,23 +60,25 @@ def apply_state(client, object_ids, state):
     :param object_ids: A list of ids corresponding objects in `state`
     :param state: A tuple of position, rotation, angular velocity and linear velocity for each object.
     """
+    client = sim_map['client']
     (positions, rotations, ang_vel, lin_vel) = state
-
-    for i, ob_id in enumerate(object_ids):
+    obj_map = sim_map['world']
+    for i, obj_key in enumerate(key_order):
+        ob_id = obj_map[obj_key]
         quat = pybullet.getQuaternionFromEuler(rotations[i])
         pybullet.resetBasePositionAndOrientation(ob_id,
                                                  posObj = positions[i],
                                                  ornObj = quat,
                                                  physicsClientId = client)
         pybullet.resetBaseVelocity(ob_id,
-                                    linearVelocity = lin_vel[i],
-                                    angularVelocity = ang_vel[i],
-                                    physicsClientId = client)
+                                   linearVelocity = lin_vel[i],
+                                   angularVelocity = ang_vel[i],
+                                   physicsClientId = client)
 
-def step_trace(client, world, dur, time_step = 240, fps = 60,
+def step_trace(client, sim, dur, time_step = 240, fps = 60,
                time_scale = 1.0, state = None, debug = False,
                ret_col = True):
-    """Obtains world state from simulation.
+    """Obtains sim state from simulation.
 
     Currently returns the position of each rigid body.
     The total duration is equal to `frames / fps`
@@ -92,7 +99,7 @@ def step_trace(client, world, dur, time_step = 240, fps = 60,
     dt = 1.0 / fps * time_scale
     frames = int(np.floor(dur * fps))
 
-    object_ids = [world[k] for k in sorted(world.keys())]
+    object_ids = [sim[k] for k in sorted(sim.keys())]
     n_objs = len(object_ids)
 
     if not state is None:
@@ -135,20 +142,27 @@ def step_trace(client, world, dur, time_step = 240, fps = 60,
 
 
 
-def clear_trace(client):
+def clear_sim(sim_map):
     """Clean up connection if not already done."""
     # print('disconnecting from {0:d}'.format(client))
+    client = sim_map['client']
+    clear_client(client)
+
+def clear_client(cid):
+    """Clean up connection if not already done."""
     pybullet.disconnect(physicsClientId=client)
 
-def run_mc_trace(client, world, state = None, fps = 60,
+def run_mc_trace(sim_map, state = None, fps = 60,
                  time_scale = 1.0):
+    client = sim_map['client']
+    world = sim_map['world']
     state = step_trace(client, world, 1./fps,
-                            fps = fps, state = state,
-                            time_scale = time_scale,
-                            ret_col = False)
+                       fps = fps, state = state,
+                       time_scale = time_scale,
+                       ret_col = False)
     return state[-1]
 
-def run_full_trace(client, world,
+def run_full_trace(sim_map,
                    T = 1.0,
                    fps = 60,
                    time_scale = 1.0,
@@ -165,6 +179,8 @@ def run_full_trace(client, world,
     :param time_scale: The time scale factor
     :param debug: Whether to run with debug visualization
     """
+    client = sim_map['client']
+    world = sim_map['world']
     return step_trace(client, world, T,
                       fps = fps, time_scale = time_scale, debug = debug)
 
@@ -185,3 +201,12 @@ def _ncr(n, r):
     numer = reduce(op.mul, range(n, n-r, -1), 1)
     denom = reduce(op.mul, range(1, r+1), 1)
     return numer // denom
+
+# TODO : this is a duplicate of `Sim.update_obj`...
+def _update_obj(obj_id, params, cid):
+    if 'physics' in params:
+        params = params['physics']
+    params = clean_params(params)
+    pybullet.changeDynamics(obj_id, -1,
+                            **params,
+                            physicsClientId = cid)

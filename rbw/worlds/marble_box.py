@@ -55,7 +55,7 @@ class MarbleWorld(World):
             v = OrderedDict()
         self._objects = v
 
-    def add_object(self, name, obj, xy):
+    def add_object(self, name, obj, x, y):
         """ Places objects on the table
 
         Objects will be placed directly on the table's surface.
@@ -68,18 +68,20 @@ class MarbleWorld(World):
         obj : ``rbw.shapes.Shape``
         Object to add to table
 
-        xy : ``np.array``
-        The xy location of the object.
+        x : `float`
+        The x location of the object.
+        y : `float`
+        The y location of the object.
         """
-        z = obj.dimensions[-1]
-        obj.position = [*xy, 0.5*z]
+        z = obj.dimensions[-1] * 0.5
+        obj.position = [x,y,z]
 
         objects = self.objects
         objects[name] = obj
         self.objects = objects
 
     def serialize(self):
-        """ Serializes an instance of ``MarbleWorld``
+        """ Serializes an instance of `MarbleWorld`
 
         Returns
         -------

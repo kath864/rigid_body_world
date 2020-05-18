@@ -32,7 +32,8 @@ class Sim(ABC):
         """Inject the client id into Bullet functions."""
         attribute = getattr(pybullet, name)
         if inspect.isbuiltin(attribute):
-            attribute = functools.partial(attribute, physicsClientId=self.client)
+            attribute = functools.partial(attribute,
+                                          physicsClientId=self.client)
         return attribute
 
     def make_obj(self, params):
@@ -46,10 +47,12 @@ class Sim(ABC):
             col_id = self.createCollisionShape(mesh,
                                             radius = radius / 2.0,
                                             height = height)
-        else:
+        elif params['shape'] == 'Ball':
             mesh = self.GEOM_SPHERE
-            z = params['dims'][0]
+            z = params['dims'][0] * 0.5
             col_id = self.createCollisionShape(mesh, radius = z)
+        else:
+            raise ValueError("Unknown shape {}".format(params['shape']))
 
         rot = self.getQuaternionFromEuler(params['orientation'])
         obj_id = self.createMultiBody(baseCollisionShapeIndex = col_id,
@@ -63,3 +66,7 @@ class Sim(ABC):
             params = params['physics']
         params = clean_params(params)
         self.changeDynamics(obj_id, -1, **params)
+
+    def serialize(self):
+        return {'world' : self.world,
+                'client' : self.client}
