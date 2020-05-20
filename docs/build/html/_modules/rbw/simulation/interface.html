@@ -37,6 +37,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">rbw</span> <span class="kn">import</span> <span class="n">np</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">pybullet</span>
+<span class="kn">from</span> <span class="nn">.sim</span> <span class="kn">import</span> <span class="n">clean_params</span>
 
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">operator</span> <span class="k">as</span> <span class="nn">op</span>
@@ -57,27 +58,31 @@
     <span class="k">return</span> <span class="n">cid</span></div>
 
 <div class="viewcode-block" id="init_sim"><a class="viewcode-back" href="../../../rbw.simulation.html#rbw.simulation.interface.init_sim">[docs]</a><span class="k">def</span> <span class="nf">init_sim</span><span class="p">(</span><span class="n">sim</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">cid</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Loads a world into a client and returns an object map</span>
+    <span class="sd">&quot;&quot;&quot; Loads a world into a client and returns an sim map</span>
 
 <span class="sd">    :param sim: A `Sim` class</span>
 <span class="sd">    :param data: json-serialized scene data to be parsed by `sim`</span>
 <span class="sd">    :param cid: The client id to using for `sim`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">s</span> <span class="o">=</span> <span class="n">sim</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">cid</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">world</span></div>
+    <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="update_world"><a class="viewcode-back" href="../../../rbw.simulation.html#rbw.simulation.interface.update_world">[docs]</a><span class="k">def</span> <span class="nf">update_world</span><span class="p">(</span><span class="n">sim</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="n">object_map</span><span class="p">,</span> <span class="n">new_world</span><span class="p">):</span>
+<div class="viewcode-block" id="update_world"><a class="viewcode-back" href="../../../rbw.simulation.html#rbw.simulation.interface.update_world">[docs]</a><span class="k">def</span> <span class="nf">update_world</span><span class="p">(</span><span class="n">sim_map</span><span class="p">,</span> <span class="n">new_world</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Updates the world&#39;s physical parameters</span>
 
 <span class="sd">    :param client: Pybullet client id</span>
 <span class="sd">    :param object_map: The object name -&gt; object id `dict`</span>
 <span class="sd">    :new_world: A serialized scene containing new physical properties</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">for</span> <span class="n">obj_key</span><span class="p">,</span> <span class="n">obj_id</span> <span class="ow">in</span> <span class="n">object_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">sim</span><span class="o">.</span><span class="n">update_obj</span><span class="p">(</span><span class="n">obj_id</span><span class="p">,</span> <span class="n">new_world</span><span class="p">[</span><span class="n">obj_key</span><span class="p">],</span> <span class="n">client</span><span class="p">)</span></div>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">sim_map</span><span class="p">[</span><span class="s1">&#39;client&#39;</span><span class="p">]</span>
+    <span class="n">obj_map</span> <span class="o">=</span> <span class="n">sim_map</span><span class="p">[</span><span class="s1">&#39;world&#39;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">obj_key</span><span class="p">,</span> <span class="n">obj_id</span> <span class="ow">in</span> <span class="n">obj_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">obj_key</span> <span class="ow">in</span> <span class="n">new_world</span><span class="p">:</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="n">new_world</span><span class="p">[</span><span class="n">obj_key</span><span class="p">]</span>
+            <span class="n">_update_obj</span><span class="p">(</span><span class="n">obj_id</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">client</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="apply_state"><a class="viewcode-back" href="../../../rbw.simulation.html#rbw.simulation.interface.apply_state">[docs]</a><span class="k">def</span> <span class="nf">apply_state</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">object_ids</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+<div class="viewcode-block" id="apply_state"><a class="viewcode-back" href="../../../rbw.simulation.html#rbw.simulation.interface.apply_state">[docs]</a><span class="k">def</span> <span class="nf">apply_state</span><span class="p">(</span><span class="n">sim_map</span><span class="p">,</span> <span class="n">key_order</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Applies a state matrix to each object reported</span>
 
 <span class="sd">    The expected dimensions of state are obsxSTATE</span>
@@ -88,23 +93,25 @@
 <span class="sd">    :param object_ids: A list of ids corresponding objects in `state`</span>
 <span class="sd">    :param state: A tuple of position, rotation, angular velocity and linear velocity for each object.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">sim_map</span><span class="p">[</span><span class="s1">&#39;client&#39;</span><span class="p">]</span>
     <span class="p">(</span><span class="n">positions</span><span class="p">,</span> <span class="n">rotations</span><span class="p">,</span> <span class="n">ang_vel</span><span class="p">,</span> <span class="n">lin_vel</span><span class="p">)</span> <span class="o">=</span> <span class="n">state</span>
-
-    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ob_id</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">object_ids</span><span class="p">):</span>
+    <span class="n">obj_map</span> <span class="o">=</span> <span class="n">sim_map</span><span class="p">[</span><span class="s1">&#39;world&#39;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">obj_key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">key_order</span><span class="p">):</span>
+        <span class="n">ob_id</span> <span class="o">=</span> <span class="n">obj_map</span><span class="p">[</span><span class="n">obj_key</span><span class="p">]</span>
         <span class="n">quat</span> <span class="o">=</span> <span class="n">pybullet</span><span class="o">.</span><span class="n">getQuaternionFromEuler</span><span class="p">(</span><span class="n">rotations</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
         <span class="n">pybullet</span><span class="o">.</span><span class="n">resetBasePositionAndOrientation</span><span class="p">(</span><span class="n">ob_id</span><span class="p">,</span>
                                                  <span class="n">posObj</span> <span class="o">=</span> <span class="n">positions</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
                                                  <span class="n">ornObj</span> <span class="o">=</span> <span class="n">quat</span><span class="p">,</span>
                                                  <span class="n">physicsClientId</span> <span class="o">=</span> <span class="n">client</span><span class="p">)</span>
         <span class="n">pybullet</span><span class="o">.</span><span class="n">resetBaseVelocity</span><span class="p">(</span><span class="n">ob_id</span><span class="p">,</span>
-                                    <span class="n">linearVelocity</span> <span class="o">=</span> <span class="n">lin_vel</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
-                                    <span class="n">angularVelocity</span> <span class="o">=</span> <span class="n">ang_vel</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
-                                    <span class="n">physicsClientId</span> <span class="o">=</span> <span class="n">client</span><span class="p">)</span></div>
+                                   <span class="n">linearVelocity</span> <span class="o">=</span> <span class="n">lin_vel</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                   <span class="n">angularVelocity</span> <span class="o">=</span> <span class="n">ang_vel</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                                   <span class="n">physicsClientId</span> <span class="o">=</span> <span class="n">client</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="step_trace"><a class="viewcode-back" href="../../../rbw.simulation.html#rbw.simulation.interface.step_trace">[docs]</a><span class="k">def</span> <span class="nf">step_trace</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">world</span><span class="p">,</span> <span class="n">dur</span><span class="p">,</span> <span class="n">time_step</span> <span class="o">=</span> <span class="mi">240</span><span class="p">,</span> <span class="n">fps</span> <span class="o">=</span> <span class="mi">60</span><span class="p">,</span>
+<div class="viewcode-block" id="step_trace"><a class="viewcode-back" href="../../../rbw.simulation.html#rbw.simulation.interface.step_trace">[docs]</a><span class="k">def</span> <span class="nf">step_trace</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">sim</span><span class="p">,</span> <span class="n">dur</span><span class="p">,</span> <span class="n">time_step</span> <span class="o">=</span> <span class="mi">240</span><span class="p">,</span> <span class="n">fps</span> <span class="o">=</span> <span class="mi">60</span><span class="p">,</span>
                <span class="n">time_scale</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">state</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">debug</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
                <span class="n">ret_col</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Obtains world state from simulation.</span>
+    <span class="sd">&quot;&quot;&quot;Obtains sim state from simulation.</span>
 
 <span class="sd">    Currently returns the position of each rigid body.</span>
 <span class="sd">    The total duration is equal to `frames / fps`</span>
@@ -125,7 +132,7 @@
     <span class="n">dt</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">fps</span> <span class="o">*</span> <span class="n">time_scale</span>
     <span class="n">frames</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">dur</span> <span class="o">*</span> <span class="n">fps</span><span class="p">))</span>
 
-    <span class="n">object_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">world</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">world</span><span class="o">.</span><span class="n">keys</span><span class="p">())]</span>
+    <span class="n">object_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">sim</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">keys</span><span class="p">())]</span>
     <span class="n">n_objs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">object_ids</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">state</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -168,20 +175,27 @@
 
 
 
-<div class="viewcode-block" id="clear_trace"><a class="viewcode-back" href="../../../rbw.simulation.html#rbw.simulation.interface.clear_trace">[docs]</a><span class="k">def</span> <span class="nf">clear_trace</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+<div class="viewcode-block" id="clear_sim"><a class="viewcode-back" href="../../../rbw.simulation.html#rbw.simulation.interface.clear_sim">[docs]</a><span class="k">def</span> <span class="nf">clear_sim</span><span class="p">(</span><span class="n">sim_map</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Clean up connection if not already done.&quot;&quot;&quot;</span>
     <span class="c1"># print(&#39;disconnecting from {0:d}&#39;.format(client))</span>
-    <span class="n">pybullet</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">physicsClientId</span><span class="o">=</span><span class="n">client</span><span class="p">)</span></div>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">sim_map</span><span class="p">[</span><span class="s1">&#39;client&#39;</span><span class="p">]</span>
+    <span class="n">clear_client</span><span class="p">(</span><span class="n">client</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="run_mc_trace"><a class="viewcode-back" href="../../../rbw.simulation.html#rbw.simulation.interface.run_mc_trace">[docs]</a><span class="k">def</span> <span class="nf">run_mc_trace</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">world</span><span class="p">,</span> <span class="n">state</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">fps</span> <span class="o">=</span> <span class="mi">60</span><span class="p">,</span>
+<div class="viewcode-block" id="clear_client"><a class="viewcode-back" href="../../../rbw.simulation.html#rbw.simulation.interface.clear_client">[docs]</a><span class="k">def</span> <span class="nf">clear_client</span><span class="p">(</span><span class="n">cid</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Clean up connection if not already done.&quot;&quot;&quot;</span>
+    <span class="n">pybullet</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">physicsClientId</span><span class="o">=</span><span class="n">cid</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="run_mc_trace"><a class="viewcode-back" href="../../../rbw.simulation.html#rbw.simulation.interface.run_mc_trace">[docs]</a><span class="k">def</span> <span class="nf">run_mc_trace</span><span class="p">(</span><span class="n">sim_map</span><span class="p">,</span> <span class="n">state</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">fps</span> <span class="o">=</span> <span class="mi">60</span><span class="p">,</span>
                  <span class="n">time_scale</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">):</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">sim_map</span><span class="p">[</span><span class="s1">&#39;client&#39;</span><span class="p">]</span>
+    <span class="n">world</span> <span class="o">=</span> <span class="n">sim_map</span><span class="p">[</span><span class="s1">&#39;world&#39;</span><span class="p">]</span>
     <span class="n">state</span> <span class="o">=</span> <span class="n">step_trace</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">world</span><span class="p">,</span> <span class="mf">1.</span><span class="o">/</span><span class="n">fps</span><span class="p">,</span>
-                            <span class="n">fps</span> <span class="o">=</span> <span class="n">fps</span><span class="p">,</span> <span class="n">state</span> <span class="o">=</span> <span class="n">state</span><span class="p">,</span>
-                            <span class="n">time_scale</span> <span class="o">=</span> <span class="n">time_scale</span><span class="p">,</span>
-                            <span class="n">ret_col</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+                       <span class="n">fps</span> <span class="o">=</span> <span class="n">fps</span><span class="p">,</span> <span class="n">state</span> <span class="o">=</span> <span class="n">state</span><span class="p">,</span>
+                       <span class="n">time_scale</span> <span class="o">=</span> <span class="n">time_scale</span><span class="p">,</span>
+                       <span class="n">ret_col</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">state</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="run_full_trace"><a class="viewcode-back" href="../../../rbw.simulation.html#rbw.simulation.interface.run_full_trace">[docs]</a><span class="k">def</span> <span class="nf">run_full_trace</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">world</span><span class="p">,</span>
+<div class="viewcode-block" id="run_full_trace"><a class="viewcode-back" href="../../../rbw.simulation.html#rbw.simulation.interface.run_full_trace">[docs]</a><span class="k">def</span> <span class="nf">run_full_trace</span><span class="p">(</span><span class="n">sim_map</span><span class="p">,</span>
                    <span class="n">T</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
                    <span class="n">fps</span> <span class="o">=</span> <span class="mi">60</span><span class="p">,</span>
                    <span class="n">time_scale</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
@@ -198,6 +212,8 @@
 <span class="sd">    :param time_scale: The time scale factor</span>
 <span class="sd">    :param debug: Whether to run with debug visualization</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">sim_map</span><span class="p">[</span><span class="s1">&#39;client&#39;</span><span class="p">]</span>
+    <span class="n">world</span> <span class="o">=</span> <span class="n">sim_map</span><span class="p">[</span><span class="s1">&#39;world&#39;</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">step_trace</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">world</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span>
                       <span class="n">fps</span> <span class="o">=</span> <span class="n">fps</span><span class="p">,</span> <span class="n">time_scale</span> <span class="o">=</span> <span class="n">time_scale</span><span class="p">,</span> <span class="n">debug</span> <span class="o">=</span> <span class="n">debug</span><span class="p">)</span></div>
 
@@ -218,6 +234,15 @@
     <span class="n">numer</span> <span class="o">=</span> <span class="n">reduce</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">mul</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="o">-</span><span class="n">r</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
     <span class="n">denom</span> <span class="o">=</span> <span class="n">reduce</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">mul</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">r</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">numer</span> <span class="o">//</span> <span class="n">denom</span>
+
+<span class="c1"># TODO : this is a duplicate of `Sim.update_obj`...</span>
+<span class="k">def</span> <span class="nf">_update_obj</span><span class="p">(</span><span class="n">obj_id</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">cid</span><span class="p">):</span>
+    <span class="k">if</span> <span class="s1">&#39;physics&#39;</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;physics&#39;</span><span class="p">]</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">clean_params</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+    <span class="n">pybullet</span><span class="o">.</span><span class="n">changeDynamics</span><span class="p">(</span><span class="n">obj_id</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+                            <span class="o">**</span><span class="n">params</span><span class="p">,</span>
+                            <span class="n">physicsClientId</span> <span class="o">=</span> <span class="n">cid</span><span class="p">)</span>
 </pre></div>
 
           </div>

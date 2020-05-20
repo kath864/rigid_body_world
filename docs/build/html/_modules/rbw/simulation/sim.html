@@ -65,7 +65,8 @@
         <span class="sd">&quot;&quot;&quot;Inject the client id into Bullet functions.&quot;&quot;&quot;</span>
         <span class="n">attribute</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">pybullet</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isbuiltin</span><span class="p">(</span><span class="n">attribute</span><span class="p">):</span>
-            <span class="n">attribute</span> <span class="o">=</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">attribute</span><span class="p">,</span> <span class="n">physicsClientId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">)</span>
+            <span class="n">attribute</span> <span class="o">=</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">attribute</span><span class="p">,</span>
+                                          <span class="n">physicsClientId</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">attribute</span>
 
 <div class="viewcode-block" id="Sim.make_obj"><a class="viewcode-back" href="../../../rbw.simulation.html#rbw.simulation.sim.Sim.make_obj">[docs]</a>    <span class="k">def</span> <span class="nf">make_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
@@ -79,10 +80,12 @@
             <span class="n">col_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">createCollisionShape</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span>
                                             <span class="n">radius</span> <span class="o">=</span> <span class="n">radius</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">,</span>
                                             <span class="n">height</span> <span class="o">=</span> <span class="n">height</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;shape&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Ball&#39;</span><span class="p">:</span>
             <span class="n">mesh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">GEOM_SPHERE</span>
-            <span class="n">z</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;dims&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;dims&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.5</span>
             <span class="n">col_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">createCollisionShape</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">radius</span> <span class="o">=</span> <span class="n">z</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown shape </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;shape&#39;</span><span class="p">]))</span>
 
         <span class="n">rot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getQuaternionFromEuler</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;orientation&#39;</span><span class="p">])</span>
         <span class="n">obj_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">createMultiBody</span><span class="p">(</span><span class="n">baseCollisionShapeIndex</span> <span class="o">=</span> <span class="n">col_id</span><span class="p">,</span>
@@ -95,7 +98,11 @@
         <span class="k">if</span> <span class="s1">&#39;physics&#39;</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
             <span class="n">params</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;physics&#39;</span><span class="p">]</span>
         <span class="n">params</span> <span class="o">=</span> <span class="n">clean_params</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">changeDynamics</span><span class="p">(</span><span class="n">obj_id</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">changeDynamics</span><span class="p">(</span><span class="n">obj_id</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Sim.serialize"><a class="viewcode-back" href="../../../rbw.simulation.html#rbw.simulation.sim.Sim.serialize">[docs]</a>    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;world&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">world</span><span class="p">,</span>
+                <span class="s1">&#39;client&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">}</span></div></div>
 </pre></div>
 
           </div>

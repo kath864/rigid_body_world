@@ -44,7 +44,7 @@
 <p>Implemented as functions rather than classes to facilitate cross-language support.</p>
 <dl class="py function">
 <dt id="rbw.simulation.interface.apply_state">
-<code class="sig-prename descclassname">rbw.simulation.interface.</code><code class="sig-name descname">apply_state</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">client</span></em>, <em class="sig-param"><span class="n">object_ids</span></em>, <em class="sig-param"><span class="n">state</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/simulation/interface.html#apply_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.simulation.interface.apply_state" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">rbw.simulation.interface.</code><code class="sig-name descname">apply_state</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sim_map</span></em>, <em class="sig-param"><span class="n">key_order</span></em>, <em class="sig-param"><span class="n">state</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/simulation/interface.html#apply_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.simulation.interface.apply_state" title="Permalink to this definition">¶</a></dt>
 <dd><p>Applies a state matrix to each object reported</p>
 <p>The expected dimensions of state are obsxSTATE
 where <cite>obs</cite> is the number of objects (in order)
@@ -61,8 +61,14 @@ component.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="rbw.simulation.interface.clear_trace">
-<code class="sig-prename descclassname">rbw.simulation.interface.</code><code class="sig-name descname">clear_trace</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">client</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/simulation/interface.html#clear_trace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.simulation.interface.clear_trace" title="Permalink to this definition">¶</a></dt>
+<dt id="rbw.simulation.interface.clear_client">
+<code class="sig-prename descclassname">rbw.simulation.interface.</code><code class="sig-name descname">clear_client</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cid</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/simulation/interface.html#clear_client"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.simulation.interface.clear_client" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clean up connection if not already done.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="rbw.simulation.interface.clear_sim">
+<code class="sig-prename descclassname">rbw.simulation.interface.</code><code class="sig-name descname">clear_sim</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sim_map</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/simulation/interface.html#clear_sim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.simulation.interface.clear_sim" title="Permalink to this definition">¶</a></dt>
 <dd><p>Clean up connection if not already done.</p>
 </dd></dl>
 
@@ -75,7 +81,7 @@ component.</p>
 <dl class="py function">
 <dt id="rbw.simulation.interface.init_sim">
 <code class="sig-prename descclassname">rbw.simulation.interface.</code><code class="sig-name descname">init_sim</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sim</span></em>, <em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">cid</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/simulation/interface.html#init_sim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.simulation.interface.init_sim" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loads a world into a client and returns an object map</p>
+<dd><p>Loads a world into a client and returns an sim map</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -89,7 +95,7 @@ component.</p>
 
 <dl class="py function">
 <dt id="rbw.simulation.interface.run_full_trace">
-<code class="sig-prename descclassname">rbw.simulation.interface.</code><code class="sig-name descname">run_full_trace</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">client</span></em>, <em class="sig-param"><span class="n">world</span></em>, <em class="sig-param"><span class="n">T</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">fps</span><span class="o">=</span><span class="default_value">60</span></em>, <em class="sig-param"><span class="n">time_scale</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/simulation/interface.html#run_full_trace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.simulation.interface.run_full_trace" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">rbw.simulation.interface.</code><code class="sig-name descname">run_full_trace</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sim_map</span></em>, <em class="sig-param"><span class="n">T</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">fps</span><span class="o">=</span><span class="default_value">60</span></em>, <em class="sig-param"><span class="n">time_scale</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/simulation/interface.html#run_full_trace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.simulation.interface.run_full_trace" title="Permalink to this definition">¶</a></dt>
 <dd><p>Runs pybullet on on given scene
 Frames per second are fixed at 60
 If no objects are given, then the top keys of
@@ -110,13 +116,13 @@ If no objects are given, then the top keys of
 
 <dl class="py function">
 <dt id="rbw.simulation.interface.run_mc_trace">
-<code class="sig-prename descclassname">rbw.simulation.interface.</code><code class="sig-name descname">run_mc_trace</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">client</span></em>, <em class="sig-param"><span class="n">world</span></em>, <em class="sig-param"><span class="n">state</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fps</span><span class="o">=</span><span class="default_value">60</span></em>, <em class="sig-param"><span class="n">time_scale</span><span class="o">=</span><span class="default_value">1.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/simulation/interface.html#run_mc_trace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.simulation.interface.run_mc_trace" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">rbw.simulation.interface.</code><code class="sig-name descname">run_mc_trace</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sim_map</span></em>, <em class="sig-param"><span class="n">state</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fps</span><span class="o">=</span><span class="default_value">60</span></em>, <em class="sig-param"><span class="n">time_scale</span><span class="o">=</span><span class="default_value">1.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/simulation/interface.html#run_mc_trace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.simulation.interface.run_mc_trace" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt id="rbw.simulation.interface.step_trace">
-<code class="sig-prename descclassname">rbw.simulation.interface.</code><code class="sig-name descname">step_trace</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">client</span></em>, <em class="sig-param"><span class="n">world</span></em>, <em class="sig-param"><span class="n">dur</span></em>, <em class="sig-param"><span class="n">time_step</span><span class="o">=</span><span class="default_value">240</span></em>, <em class="sig-param"><span class="n">fps</span><span class="o">=</span><span class="default_value">60</span></em>, <em class="sig-param"><span class="n">time_scale</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">state</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">ret_col</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/simulation/interface.html#step_trace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.simulation.interface.step_trace" title="Permalink to this definition">¶</a></dt>
-<dd><p>Obtains world state from simulation.</p>
+<code class="sig-prename descclassname">rbw.simulation.interface.</code><code class="sig-name descname">step_trace</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">client</span></em>, <em class="sig-param"><span class="n">sim</span></em>, <em class="sig-param"><span class="n">dur</span></em>, <em class="sig-param"><span class="n">time_step</span><span class="o">=</span><span class="default_value">240</span></em>, <em class="sig-param"><span class="n">fps</span><span class="o">=</span><span class="default_value">60</span></em>, <em class="sig-param"><span class="n">time_scale</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">state</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">ret_col</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/simulation/interface.html#step_trace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.simulation.interface.step_trace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Obtains sim state from simulation.</p>
 <p>Currently returns the position of each rigid body.
 The total duration is equal to <cite>frames / fps</cite></p>
 <dl class="field-list simple">
@@ -133,7 +139,7 @@ The total duration is equal to <cite>frames / fps</cite></p>
 
 <dl class="py function">
 <dt id="rbw.simulation.interface.update_world">
-<code class="sig-prename descclassname">rbw.simulation.interface.</code><code class="sig-name descname">update_world</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sim</span></em>, <em class="sig-param"><span class="n">client</span></em>, <em class="sig-param"><span class="n">object_map</span></em>, <em class="sig-param"><span class="n">new_world</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/simulation/interface.html#update_world"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.simulation.interface.update_world" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">rbw.simulation.interface.</code><code class="sig-name descname">update_world</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sim_map</span></em>, <em class="sig-param"><span class="n">new_world</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/simulation/interface.html#update_world"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.simulation.interface.update_world" title="Permalink to this definition">¶</a></dt>
 <dd><p>Updates the world’s physical parameters</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -195,6 +201,11 @@ The total duration is equal to <cite>frames / fps</cite></p>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt id="rbw.simulation.sim.Sim.serialize">
+<code class="sig-name descname">serialize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/simulation/sim.html#Sim.serialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.simulation.sim.Sim.serialize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt id="rbw.simulation.sim.Sim.update_obj">
 <code class="sig-name descname">update_obj</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj_id</span></em>, <em class="sig-param"><span class="n">params</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/simulation/sim.html#Sim.update_obj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.simulation.sim.Sim.update_obj" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -238,13 +249,7 @@ The total duration is equal to <cite>frames / fps</cite></p>
 <li class="toctree-l1 current"><a class="reference internal" href="rbw.html">rbw package</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="rbw.html#subpackages">Subpackages</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="rbw.shapes.html">rbw.shapes package</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">rbw.simulation package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#module-rbw.simulation.interface">rbw.simulation.interface module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#module-rbw.simulation.ramp_sim">rbw.simulation.ramp_sim module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#module-rbw.simulation.sim">rbw.simulation.sim module</a></li>
-</ul>
-</li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">rbw.simulation package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="rbw.utils.html">rbw.utils package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="rbw.worlds.html">rbw.worlds package</a></li>
 </ul>
