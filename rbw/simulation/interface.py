@@ -132,14 +132,14 @@ def step_trace(client, sim, dur, time_step = 240, fps = 60,
         _step_simulation(client, dt, time_step, update_cols)
 
         for c, obj_id in enumerate(object_ids):
-            pos, rot = pybullet.getBasePositionAndOrientation(obj_id,
+            pos, quat = pybullet.getBasePositionAndOrientation(obj_id,
                                                               physicsClientId = client)
             l_vel, a_vel = pybullet.getBaseVelocity(obj_id,
                                                     physicsClientId = client)
             pla[frame, 0, c] = pos
             pla[frame, 1, c] = a_vel
             pla[frame, 2, c] = l_vel
-            rot[frame, c] = rot
+            rot[frame, c] = quat
 
     if ret_col:
         return pla, rot, collisions
