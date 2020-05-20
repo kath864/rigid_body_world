@@ -61,14 +61,13 @@ def apply_state(sim_map, key_order, state):
     :param state: A tuple of position, rotation, angular velocity and linear velocity for each object.
     """
     client = sim_map['client']
-    (positions, rotations, ang_vel, lin_vel) = state
     obj_map = sim_map['world']
+    ((positions, ang_vel, lin_vel), rotations) = state
     for i, obj_key in enumerate(key_order):
         ob_id = obj_map[obj_key]
-        quat = pybullet.getQuaternionFromEuler(rotations[i])
         pybullet.resetBasePositionAndOrientation(ob_id,
                                                  posObj = positions[i],
-                                                 ornObj = quat,
+                                                 ornObj = rotations[i],
                                                  physicsClientId = client)
         pybullet.resetBaseVelocity(ob_id,
                                    linearVelocity = lin_vel[i],
@@ -76,7 +75,7 @@ def apply_state(sim_map, key_order, state):
                                    physicsClientId = client)
 
 def step_trace(client, sim, dur, time_step = 240, fps = 60,
-               time_scale = 1.0, state = None, debug = False,
+               time_scale = 1.0, prev_state = None, debug = False,
                ret_col = True):
     """Obtains sim state from simulation.
 
@@ -102,10 +101,16 @@ def step_trace(client, sim, dur, time_step = 240, fps = 60,
     object_ids = [sim[k] for k in sorted(sim.keys())]
     n_objs = len(object_ids)
 
-    if not state is None:
-        apply_state(client, object_ids, state)
+    if not prev_state is None:
+        apply_state(client, object_ids, prev_state)
 
-    state = np.zeros((frames, 4, n_objs, 3))
+
+    # position (x,y,z), linear velocity (x,y,z),
+    # angular velocity (wx,wy,wz)
+    pla = np.zeros((frames, 3, n_objs, 3))
+    # quaternion (w,x,y,z)
+    rot = np.zeros((frames, n_objs, 4))
+    # upper diagonal of N x N object collisions
     collisions = np.zeros((frames, _ncr(n_objs, 2)))
 
     if debug:
@@ -131,14 +136,14 @@ def step_trace(client, sim, dur, time_step = 240, fps = 60,
                                                               physicsClientId = client)
             l_vel, a_vel = pybullet.getBaseVelocity(obj_id,
                                                     physicsClientId = client)
-            state[frame, 0, c] = pos
-            state[frame, 1, c] = pybullet.getEulerFromQuaternion(rot)
-            state[frame, 2, c] = a_vel
-            state[frame, 3, c] = l_vel
+            pla[frame, 0, c] = pos
+            pla[frame, 1, c] = a_vel
+            pla[frame, 2, c] = l_vel
+            rot[frame, c] = rot
 
     if ret_col:
-        return state, collisions
-    return state
+        return pla, rot, collisions
+    return pla, rot
 
 
 
