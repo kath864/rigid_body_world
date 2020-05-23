@@ -43,7 +43,7 @@ class MarbleWorld(World):
         table.position = [0, 0, table_dims[2]*-0.5]
         self.table = table
         self.objects = objects
-        self.init_vel = {}
+        self.init_force = {}
 
     @property
     def objects(self):
@@ -56,7 +56,7 @@ class MarbleWorld(World):
         self._objects = v
 
     def add_object(self, name, obj, x, y,
-                   lin_vel = None):
+                   force = None):
         """ Places objects on the table
 
         Objects will be placed directly on the table's surface.
@@ -81,8 +81,8 @@ class MarbleWorld(World):
         objects[name] = obj
         self.objects = objects
 
-        if not (lin_vel is None):
-            self.init_vel[name] = lin_vel
+        if not (force is None):
+            self.init_force[name] = force
 
 
     def serialize(self):
@@ -102,5 +102,5 @@ class MarbleWorld(World):
         # add 'objects'
         d = super().serialize()
         d['table'] = self.table.serialize()
-        d['init_lin_vel'] = self.init_vel
+        d['init_force'] = self.init_force
         return d
