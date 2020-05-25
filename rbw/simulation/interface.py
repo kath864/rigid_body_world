@@ -114,6 +114,8 @@ def step_trace(client, sim, dur, time_step = 240, fps = 60,
     collisions = np.zeros((frames, _ncr(n_objs, 2)))
 
     if debug:
+        # add one step to resolve any initial forces
+        pybullet.stepSimulation(physicsClientId = client)
         pybullet.setRealTimeSimulation(1, physicsClientId = client)
         while (1):
             keys = pybullet.getKeyboardEvents()
