@@ -135,8 +135,9 @@ class Shape(ABC):
         if value is None:
             value = [0, 0, 0]
         v = np.array(value)
-        if v.size != 3:
-            raise ValueError('Orientation must be 3 euler angles')
+        if not (v.size == 3 or v.size == 4):
+            msg = 'Orientation must be 3 euler angles or 4 wxyz quaternion'
+            raise ValueError(msg)
         self._orien = v
 
     # ----------------   Methods   -----------------#
