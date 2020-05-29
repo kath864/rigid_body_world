@@ -48,8 +48,7 @@ class MarbleSim(Sim):
             d[obj] = self.make_obj(data)
             if obj in w['init_force']:
                 f = init_force[obj]
-                self.applyExternalForce(d[obj], -1, f, [0,0,0],
-                                        self.LINK_FRAME)
+                self.applyExternalForce(d[obj], -1, f, [0,0,0],self.LINK_FRAME)
         self._world = d
 
 
@@ -70,24 +69,24 @@ class MarbleSim(Sim):
         obj_id = self.createMultiBody(baseCollisionShapeIndex = wall_left,
                                       basePosition = pos_left,
                                       baseOrientation = rot)
-        self.changeDynamics(obj_id, -1)
+        self.update_obj(obj_id, params)
         pos_right =  [0, -1 * (exs[1] + exs[2]), 0]
         wall_right = self.createCollisionShape(shape, halfExtents = exs)
         obj_id = self.createMultiBody(baseCollisionShapeIndex = wall_right,
                                       basePosition = pos_right,
                                       baseOrientation = rot)
-        self.changeDynamics(obj_id, -1)
+        self.update_obj(obj_id, params)
         pos_front =  [(exs[1] + exs[2]), 0, 0]
         rot = self.getQuaternionFromEuler((0, np.pi/2, 0))
         wall_front = self.createCollisionShape(shape, halfExtents = exs)
         obj_id = self.createMultiBody(baseCollisionShapeIndex = wall_front,
                                       basePosition = pos_front,
                                       baseOrientation = rot,)
-        self.changeDynamics(obj_id, -1)
+        self.update_obj(obj_id, params)
         pos_back =  [-1*(exs[1] + exs[2]), 0, 0]
         wall_back = self.createCollisionShape(shape, halfExtents = exs)
         obj_id = self.createMultiBody(baseCollisionShapeIndex = wall_back,
                                       basePosition = pos_back,
                                       baseOrientation = rot,)
-        self.changeDynamics(obj_id, -1)
+        self.update_obj(obj_id, params)
         return base_id
