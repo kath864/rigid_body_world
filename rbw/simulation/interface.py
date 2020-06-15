@@ -107,13 +107,15 @@ def step_trace(client, sim, dur, time_step = 240, fps = 60,
 
     # position (x,y,z), linear velocity (x,y,z),
     # angular velocity (wx,wy,wz)
-    pla = np.zeros((frames, 3, n_objs, 3))
+    pal = np.zeros((frames, 3, n_objs, 3))
     # quaternion (w,x,y,z)
     rot = np.zeros((frames, n_objs, 4))
     # upper diagonal of N x N object collisions
     collisions = np.zeros((frames, _ncr(n_objs, 2)))
 
     if debug:
+        # add one step to resolve any initial forces
+        pybullet.stepSimulation(physicsClientId = client)
         pybullet.setRealTimeSimulation(1, physicsClientId = client)
         while (1):
             keys = pybullet.getKeyboardEvents()
@@ -136,14 +138,14 @@ def step_trace(client, sim, dur, time_step = 240, fps = 60,
                                                               physicsClientId = client)
             l_vel, a_vel = pybullet.getBaseVelocity(obj_id,
                                                     physicsClientId = client)
-            pla[frame, 0, c] = pos
-            pla[frame, 1, c] = a_vel
-            pla[frame, 2, c] = l_vel
+            pal[frame, 0, c] = pos
+            pal[frame, 1, c] = a_vel
+            pal[frame, 2, c] = l_vel
             rot[frame, c] = quat
 
     if ret_col:
-        return pla, rot, collisions
-    return pla, rot
+        return pal, rot, collisions
+    return pal, rot
 
 
 
