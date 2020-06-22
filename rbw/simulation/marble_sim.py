@@ -60,7 +60,6 @@ class MarbleSim(Sim):
         base_id = self.make_obj(params)
 
         # table walls
-        params = {'density': 0, 'restitution': 0.5}
         shape = self.GEOM_BOX
         exs = np.array(params['dims']) / 2.0
 
