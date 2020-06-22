@@ -50,25 +50,25 @@ class RampSim(Sim):
         # Table top
         base_id = self.make_obj(params)
 
-        params = {'density': 0, 'restitution': 0.5}
         shape = self.GEOM_BOX
         exs = np.array(params['dims']) / 2.0
+        phys_params = {'density': 0, 'restitution': 0.5}
         # table walls
         rot = self.getQuaternionFromEuler((np.pi/2, 0, 0))
         wall_left = self.createCollisionShape(shape, halfExtents = exs)
         obj_id = self.createMultiBody(baseCollisionShapeIndex = wall_left,
                                           basePosition = [params['position'][0], exs[1], 0],
                                           baseOrientation = rot)
-        self.update_obj(obj_id, params)
+        self.update_obj(obj_id, phys_params)
         wall_right = self.createCollisionShape(shape, halfExtents = exs)
         obj_id = self.createMultiBody(baseCollisionShapeIndex = wall_right,
                                    basePosition = [params['position'][0], -exs[1], 0],
                                    baseOrientation = rot)
-        self.update_obj(obj_id, params)
+        self.update_obj(obj_id, phys_params)
         rot = self.getQuaternionFromEuler((0, np.pi/2, 0))
         wall_end = self.createCollisionShape(shape, halfExtents = exs)
         obj_id = self.createMultiBody(baseCollisionShapeIndex = wall_end,
                                    basePosition = [exs[0]*2+exs[2], 0, 0],
                                    baseOrientation = rot,)
-        self.update_obj(obj_id, params)
+        self.update_obj(obj_id, phys_params)
         return base_id
