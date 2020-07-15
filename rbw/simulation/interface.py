@@ -173,6 +173,7 @@ def run_full_trace(sim_map,
                    T = 1.0,
                    fps = 60,
                    time_scale = 1.0,
+                   time_step = 240,
                    debug = False):
     """ Runs pybullet on on given scene
     Frames per second are fixed at 60
@@ -189,7 +190,8 @@ def run_full_trace(sim_map,
     client = sim_map['client']
     world = sim_map['world']
     return step_trace(client, world, T,
-                      fps = fps, time_scale = time_scale, debug = debug)
+                      fps = fps, time_scale = time_scale,
+                      time_step = time_step, debug = debug)
 
 #######################################################################
 # Helpers
