@@ -1,8 +1,7 @@
-from rbw import np
+import networkx as nx
+import numpy as np
 from rbw.shapes import Block
 from rbw.worlds import World
-
-from collections import OrderedDict
 
 default_phys = {'lateralFriction': 0.2,
                 'density': 0.0}
@@ -18,6 +17,45 @@ def default_box():
     tbl = MarbleWorld(table_dims)
     return tbl
 
+def make_table(table_dims, table_phys):
+    g = nx.DiGraph()
+    # for legacy support
+    # pad dimensions with z
+    if len(table_dims) == 2:
+        table_dims = [*table_dims, 0.1]
+    table = Block('table', table_dims, table_phys)
+    # We want the table surface to be the xy plane @ z = 0
+    table.position = [0, 0, table_dims[2]*-0.5]
+    g.add_node('table_top', **table.serialize())
+
+    # stair walls
+    delta = 0.01
+    exs_lr = np.array([delta, table_dims[1], table_dims[2] * 1.1]) * 0.5
+    exs_fb = np.array([table_dims[0], delta, table_dims[2] * 1.1]) * 0.5
+
+    pos_left =  table_dims * np.array([-0.5, 0, 0.5]) - np.array([delta, 0, 0])
+    wall_left = Block('table', exs_lr, table_phys)
+    wall_left.position = pos_left
+    g.add_node('table_wall_left', **wall_left.serialize())
+
+    pos_right =  table_dims * np.array([0.5, 0, 0.5]) + np.array([delta, 0, 0])
+    wall_right = Block('table', exs_lr, table_phys)
+    wall_right.position = pos_right
+    g.add_node('table_wall_right', **wall_right.serialize())
+
+    pos_front =  table_dims * np.array([0.0, 0.5, 0.5])
+    wall_front = Block('table', exs_fb, table_phys)
+    wall_front.position = pos_front
+    g.add_node('table_wall_front', **wall_front.serialize())
+
+    pos_back =  table_dims * np.array([0.0, -0.5, 0.5])
+    wall_back = Block('table', exs_fb, table_phys)
+    wall_back.position = pos_back
+    g.add_node('table_wall_back', **wall_back.serialize())
+
+    return g
+
+
 class MarbleWorld(World):
 
     """ Describes a table with marbles
@@ -32,31 +70,19 @@ class MarbleWorld(World):
     """
 
     def __init__(self, table_dims,
-                 table_phys = default_phys,
-                 objects = None):
-        # for legacy support
-        # pad dimensions with z
-        if len(table_dims) == 2:
-            table_dims = [*table_dims, 0.1]
-        table = Block('table', table_dims, table_phys)
-        # We want the table surface to be the xy plane @ z = 0
-        table.position = [0, 0, table_dims[2]*-0.5]
-        self.table = table
-        self.objects = objects
-        self.init_force = {}
+                 table_phys = default_phys):
+        g = make_table(table_dims, table_phys)
+        self.graph = g
 
     @property
-    def objects(self):
-        return self._objects
+    def graph(self):
+        return self._graph
 
-    @objects.setter
-    def objects(self, v):
-        if v is None:
-            v = OrderedDict()
-        self._objects = v
+    @graph.setter
+    def graph(self, g):
+        self._graph = g
 
-    def add_object(self, name, obj, x, y,
-                   force = None):
+    def add_object(self, name, obj, x, y):
         """ Places objects on the table
 
         Objects will be placed directly on the table's surface.
@@ -64,43 +90,18 @@ class MarbleWorld(World):
         Parameters
         ----------
         name : str
-        The key to reference the object
+            The key to reference the object
 
-        obj : ``rbw.shapes.Shape``
-        Object to add to table
+        obj : rbw.shapes.Shape
+            Object to add to table
 
         x : `float`
         The x location of the object.
+
         y : `float`
         The y location of the object.
+
         """
         z = obj.dimensions[-1] * 0.5
         obj.position = [x,y,z]
-
-        objects = self.objects
-        objects[name] = obj
-        self.objects = objects
-
-        if not (force is None):
-            self.init_force[name] = force
-
-
-    def serialize(self):
-        """ Serializes an instance of `MarbleWorld`
-
-        Returns
-        -------
-        dict
-
-        The serialized instace will have the following format
-
-        ``
-        'objects' : ...,
-        'table' : ...
-        ``
-        """
-        # add 'objects'
-        d = super().serialize()
-        d['table'] = self.table.serialize()
-        d['init_force'] = self.init_force
-        return d
+        self.graph.add_node(name, **obj.serialize())

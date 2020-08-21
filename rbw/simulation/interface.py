@@ -4,7 +4,7 @@ Implemented as functions rather than classes to facilitate cross-language suppor
 """
 from rbw import np
 from . import pybullet
-from .sim import clean_params
+from . import Sim
 
 import time
 import operator as op
@@ -24,15 +24,26 @@ def init_client(debug = False, **kwargs):
     cid = pybullet.connect(t, **kwargs)
     return cid
 
-def init_sim(sim, data, cid):
+def init_sim_serialized(sim, str_data, cid):
+    pass
+
+def init_sim(sim, graph, cid):
     """ Loads a world into a client and returns an sim map
 
-    :param sim: A `Sim` class
-    :param data: json-serialized scene data to be parsed by `sim`
-    :param cid: The client id to using for `sim`
+    Parameters
+    ----------
+    sim : Sim
+
+    graph : nx.DiGraph
+
+    cid : int
+
+    Returns
+    -------
+    dict
+        object ids
     """
-    s = sim(data, cid)
-    return s.serialize()
+    pass
 
 def update_world(sim_map, new_world):
     """ Updates the world's physical parameters
@@ -49,34 +60,23 @@ def update_world(sim_map, new_world):
             _update_obj(obj_id, params, client)
 
 
-def apply_state(sim_map, key_order, state):
-    """ Applies a state matrix to each object reported
+#TODO: doc me!
+def apply_state(sim, ids, state):
+    rev_ids = {value : key for key,value in ids.items()}
+    w_rev = state.reverse()
+    shapes = nx.subgraph_view(w_rev, filter_node = is_shape_node)
 
-    The expected dimensions of state are obsxSTATE
-    where `obs` is the number of objects (in order)
-    and STATE is the tuple representing the dimensions of the
-    component.
+    for shape in shapes.nodes():
+        # load newtonian objects
+        obj_id = rev_ids[shape]
+        sim.update_obj(obj_id, shape)
+        self.apply_force_torque(obj_id, w_rev.adj[shape])
 
-    :param object_ids: A list of ids corresponding objects in `state`
-    :param state: A tuple of position, rotation, angular velocity and linear velocity for each object.
-    """
-    client = sim_map['client']
-    obj_map = sim_map['world']
-    ((positions, ang_vel, lin_vel), rotations) = state
-    for i, obj_key in enumerate(key_order):
-        ob_id = obj_map[obj_key]
-        pybullet.resetBasePositionAndOrientation(ob_id,
-                                                 posObj = positions[i],
-                                                 ornObj = rotations[i],
-                                                 physicsClientId = client)
-        pybullet.resetBaseVelocity(ob_id,
-                                   linearVelocity = lin_vel[i],
-                                   angularVelocity = ang_vel[i],
-                                   physicsClientId = client)
-
-def step_trace(client, sim, dur, time_step = 240, fps = 60,
-               time_scale = 1.0, prev_state = None, debug = False,
-               ret_col = True):
+def batch_step(sim, ids, g, dur,
+               time_step = 240,
+               time_scale = 1.0,
+               prev_state = None,
+               debug = False):
     """Obtains sim state from simulation.
 
     Currently returns the position of each rigid body.
@@ -88,65 +88,32 @@ def step_trace(client, sim, dur, time_step = 240, fps = 60,
         time_step (int, optional): Number of physics steps per second
         fps (int, optional): Number of frames to report per second.
     """
-    pybullet.setPhysicsEngineParameter(
+    sim.setPhysicsEngineParameter(
         enableFileCaching = 0,
         fixedTimeStep = 1/time_step,
-        physicsClientId = client
     )
 
-    # Configure time steps
-    dt = 1.0 / fps * time_scale
-    frames = int(np.floor(dur * fps))
+    n_steps = int(dur * time_step)
 
-    object_ids = [sim[k] for k in sorted(sim.keys())]
-    n_objs = len(object_ids)
+    n_objs = len(ids)
 
-    if not prev_state is None:
-        apply_state(client, object_ids, prev_state)
-
-
-    # position (x,y,z), linear velocity (x,y,z),
-    # angular velocity (wx,wy,wz)
-    pal = np.zeros((frames, 3, n_objs, 3))
-    # quaternion (w,x,y,z)
-    rot = np.zeros((frames, n_objs, 4))
-    # upper diagonal of N x N object collisions
-    collisions = np.zeros((frames, _ncr(n_objs, 2)))
+    (prev_state is None) or apply_state(sim, ids, prev_state)
 
     if debug:
         # add one step to resolve any initial forces
-        pybullet.stepSimulation(physicsClientId = client)
-        pybullet.setRealTimeSimulation(1, physicsClientId = client)
+        sim.stepSimulation()
+        sim.setRealTimeSimulation(1)
         while (1):
-            keys = pybullet.getKeyboardEvents()
+            keys = sim.getKeyboardEvents()
             print(keys)
             time.sleep(0.01)
         return
 
+    states = np.empty(n_steps, g.__class__)
+    for step in range(n_steps):
+        states[step] = _step_simulation(sim, g, ids)
 
-    for frame in range(frames):
-        def update_cols():
-            for c,(a,b) in enumerate(combinations(object_ids, 2)):
-                cp = len(pybullet.getContactPoints(bodyA=a, bodyB=b,
-                                                   physicsClientId = client))
-                collisions[frame, c] += cp
-
-        _step_simulation(client, dt, time_step, update_cols)
-
-        for c, obj_id in enumerate(object_ids):
-            pos, quat = pybullet.getBasePositionAndOrientation(obj_id,
-                                                              physicsClientId = client)
-            l_vel, a_vel = pybullet.getBaseVelocity(obj_id,
-                                                    physicsClientId = client)
-            pal[frame, 0, c] = pos
-            pal[frame, 1, c] = a_vel
-            pal[frame, 2, c] = l_vel
-            rot[frame, c] = quat
-
-    if ret_col:
-        return pal, rot, collisions
-    return pal, rot
-
+    return states
 
 
 def clear_sim(sim_map):
@@ -169,7 +136,7 @@ def run_mc_trace(sim_map, state = None, fps = 60,
                        ret_col = False)
     return state[-1]
 
-def run_full_trace(sim_map,
+def run_full_trace(client, graph,
                    T = 1.0,
                    fps = 60,
                    time_scale = 1.0,
@@ -187,23 +154,36 @@ def run_full_trace(sim_map,
     :param time_scale: The time scale factor
     :param debug: Whether to run with debug visualization
     """
-    client = sim_map['client']
-    world = sim_map['world']
-    return step_trace(client, world, T,
-                      fps = fps, time_scale = time_scale,
+    sim = Sim(client)
+    ids = sim.load_graph(graph)
+    return batch_step(sim, ids, graph, T,
+                      time_scale = time_scale,
                       time_step = time_step, debug = debug)
 
 #######################################################################
 # Helpers
 #######################################################################
 
-def _step_simulation(client, dt, time_step, update_fn):
-    current = 0.0
-    while current < dt:
-        pybullet.stepSimulation(physicsClientId = client)
-        update_fn()
-        current += 1.0/time_step
+def _step_simulation(sim, g, ids):
+    state = g.__class__()
+    state.add_nodes_from(g)
+    sim.stepSimulation()
 
+    # node updates
+    for obj_id, node in ids.items():
+        node_state = extract_state(obj_id, client)
+        state.nodes[node].update(node_state)
+
+    for c,(a,b) in enumerate(combinations(ids.keys(), 2)):
+        contact_info = sim.getContactPoints(bodya=a, bodyb=b)
+        if not contact_info[0]:
+            continue
+        state.add_edge(ids[a], ids[b], distance = contact_info[8],
+                        force = contact_info[9])
+        contact_info = pybullet.getContactPoints(bodya=b, bodyb=a)
+        state.add_edge(ids[b], ids[a], distance = contact_info[8],
+                        force = contact_info[9])
+    return state
 
 def _ncr(n, r):
     r = min(r, n-r)
@@ -219,3 +199,11 @@ def _update_obj(obj_id, params, cid):
     pybullet.changeDynamics(obj_id, -1,
                             **params,
                             physicsClientId = cid)
+
+def extract_state(obj_id, client):
+    pos, quat = pybullet.getBasePositionAndOrientation(obj_id,
+                                                       physicsClientId = client)
+    l_vel, a_vel = pybullet.getBaseVelocity(obj_id,
+                                        physicsClientId = client)
+    return {'position' : pos, 'orientation' : quat,
+            'linear_vel' : l_vel, 'angular_vel' : a_vel }

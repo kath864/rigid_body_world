@@ -7,6 +7,7 @@
 
 Describes geometric and physical properties of objecs.
 """
+from .kin_obj import KinematicObject
 from .shape import Shape
 from .block import Block
 from .ball import Ball

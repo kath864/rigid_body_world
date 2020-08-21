@@ -3,28 +3,25 @@ from . import pybullet
 import inspect
 import functools
 from abc import ABC, abstractmethod
+import networkx as nx
 
 
 phys_keys = ['lateralFriction', 'mass', 'restitution',
              'rollingFriction', 'linearDamping']
 
+def is_phys_key(k,v):
+    return (k in phys_keys)
+
 def clean_params(phys_params):
-    return {k:v for k,v in phys_params.items() if k in phys_keys}
+    return dict(filter(is_phys_key, phys_params.items()))
+
+def is_shape_node(node):
+    return 'shape' in node
 
 class Sim(ABC):
 
-
-    @property
-    @abstractmethod
-    def client(self):
-        """ The pybullet client key"""
-        pass
-
-    @property
-    @abstractmethod
-    def world(self):
-        """ A `Dict` containing references to loaded objects"""
-        pass
+    def __init__(self, cid):
+        self.client = cid
 
     # cribbed from:
     # https://github.com/bulletphysics/bullet3/blob/004dcc34041d1e5a5d92f747296b0986922ebb96/examples/pybullet/gym/pybullet_utils/bullet_client.py#L41-L48
@@ -36,37 +33,74 @@ class Sim(ABC):
                                           physicsClientId=self.client)
         return attribute
 
-    def make_obj(self, params):
-        if params['shape'] == 'Block':
+
+    def load_graph(self, w):
+        self.resetSimulation()
+        self.setGravity(0, 0, -10)
+
+        w_rev = w.reverse()
+        shapes = nx.subgraph_view(w_rev, filter_node = is_shape_node)
+        ids = {}
+        for shape in shapes.nodes():
+            # load newtonian objects
+            obj = self.make_shape(shape)
+
+            self.apply_force_torque(obj, w_rev.adj[shape])
+            # record obj id
+            ids[shape['name']] = obj
+
+        return ids
+
+    def make_shape(self, node):
+        if node['shape'] == 'Block':
             mesh = self.GEOM_BOX
-            dims = np.array(params['dims']) / 2.0
+            dims = np.array(node['dims']) / 2.0
             col_id = self.createCollisionShape(mesh, halfExtents = dims)
-        elif params['shape'] == 'Puck':
+        elif node['shape'] == 'Puck':
             mesh = self.GEOM_CYLINDER
-            radius, _, height = np.array(params['dims'])
+            radius, _, height = np.array(node['dims'])
             col_id = self.createCollisionShape(mesh,
                                             radius = radius / 2.0,
                                             height = height)
-        elif params['shape'] == 'Ball':
+        elif node['shape'] == 'Ball':
             mesh = self.GEOM_SPHERE
-            z = params['dims'][0] * 0.5
+            z = node['dims'][0] * 0.5
             col_id = self.createCollisionShape(mesh, radius = z)
         else:
-            raise ValueError("Unknown shape {}".format(params['shape']))
+            raise ValueError("Unknown shape {}".format(node['shape']))
 
-        rot = self.getQuaternionFromEuler(params['orientation'])
-        obj_id = self.createMultiBody(baseCollisionShapeIndex = col_id,
-                                      basePosition = params['position'],
-                                      baseOrientation = rot)
-        self.update_obj(obj_id, params)
+        obj_id = self.createMultiBody(baseCollisionShapeIndex = col_id)
+        self.update_obj(obj_id, node)
         return obj_id
 
-    def update_obj(self, obj_id, params):
-        if 'physics' in params:
-            params = params['physics']
-        params = clean_params(params)
-        self.changeDynamics(obj_id, -1, **params)
+    def update_obj(self, obj_id, node):
+        rot = node['orientation']
+        if len(rot == 3):
+            rot = self.getQuaternionFromEuler(rot)
 
-    def serialize(self):
-        return {'world' : self.world,
-                'client' : self.client}
+        self.resetBasePositionAndOrientation(ob_id,
+                                             posObj = node['position'],
+                                             ornObj = rot)
+        self.resetBaseVelocity(ob_id,
+                               linearVelocity = node['linear_velocity'],
+                               angularVelocity = node['angular_velocity'])
+        phys = clean_params(node)
+        if len(phys) > 0:
+            self.changeDynamics(obj_id, -1, **phys)
+
+    def apply_force_torque(self, obj, edges):
+        # apply forces and torques
+        force = np.zeros(3)
+        torque = np.zeros(3)
+        for nbr, e in edges.items():
+            force += e['force']
+            torque += e['torque']
+
+        self.applyExternalForce(obj, -1, force, [0,0,0],
+                                self.LINK_FRAME)
+        self.applyExternalTorque(obj, -1, torque, [0,0,0],
+                                self.LINK_FRAME)
+
+    # def serialize(self):
+    #     return {'world' : self.world,
+    #             'client' : self.client}

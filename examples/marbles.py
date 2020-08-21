@@ -32,21 +32,22 @@ c = 0
 
 # add a single ball to the middle
 ball = shapes.Ball(appearance, dims, phys_params)
-scene.add_object(str(c), ball, 0.0, 0.0,
-                 force = [1, 0, 0])
+scene.add_object(str(c), ball, 0.0, 0.0)
+                 # force = [1, 0, 0])
 wall = shapes.Ball(appearance, dims, dict(density = 100.,
                                            lateralFriction = 0.9,
                                            restitution = 0.9))
 scene.add_object(str(1), wall, 1, 0.0)
 
 # run physics
-scene_data = scene.serialize() # data must be serialized into a `Dict`
+scene_data = scene.serialize(indent = 2) # data must be serialized into a `Dict`
 pprint(scene_data)
-client = simulation.init_client(debug = True) # start a server
-sim = simulation.init_sim(simulation.MarbleSim, scene_data, client) # load ramp into client
-print(sim)
+client = simulation.init_client(debug = False) # start a server
+simulation.run_full_trace(client, scene.graph)
+# sim = simulation.init_sim(simulation.MarbleSim, scene_data, client) # load ramp into client
+# print(sim)
 
-pla, rot, col = simulation.run_full_trace(sim, debug = True) # run simulation
-print(col)
-# # print(trace.shape)
-simulation.clear_sim(sim)
+# pla, rot, col = simulation.run_full_trace(sim, debug = True) # run simulation
+# print(col)
+# # # print(trace.shape)
+# simulation.clear_sim(sim)

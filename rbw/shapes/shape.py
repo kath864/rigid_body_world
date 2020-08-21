@@ -1,6 +1,7 @@
 import numpy as np
 from copy import deepcopy
 from abc import ABC, abstractmethod
+from . import KinematicObject
 
 def change_prop(obj, prop, val):
     """ Returns a new object with updated physical property
@@ -15,22 +16,14 @@ def change_prop(obj, prop, val):
     new_obj.physics = new_physics
     return new_obj
 
-class Shape(ABC):
+#TODO : doc me!
+class Shape(KinematicObject):
 
-    """ Parent class for physical objects in :mod:`galileo_ramp.world`
-
-    This class describes the interface for
-    physical properties, apearance, and geometry
-    of objects. 
-    """
-
-    def __init__(self, appearance, dims, physics,
-                 pos = None, angle = None):
+    def __init__(self, appearance, dims, physics):
+        super().__init__()
         self.appearance = appearance
         self.dimensions = dims
         self.physics = physics
-        self.position = pos
-        self.orientation = angle
 
     # ---------------- Abstract Methods -----------------#
 
@@ -94,16 +87,6 @@ class Shape(ABC):
         """ Returns the friction coefficient used by Bullet3D"""
         return self.physics['friction']
 
-    @property
-    def position(self):
-        """ The XYZ coordinate of the object's COM"""
-        return self._pos
-
-    @property
-    def orientation(self):
-        """ The wxyz quaternion for object's rotation"""
-        return self._orien
-
     # ----------------   setters   -----------------#
 
     @appearance.setter
@@ -120,37 +103,16 @@ class Shape(ABC):
         value['mass'] = self.volume * value['density']
         self._physics = value
 
-    @position.setter
-    def position(self, value):
-        if value is None:
-            value = [0, 0, 0]
-        v = np.array(value)
-        if v.size != 3:
-            raise ValueError('position must be xyz')
-        self._pos = v
-
-
-    @orientation.setter
-    def orientation(self, value):
-        if value is None:
-            value = [0, 0, 0]
-        v = np.array(value)
-        if not (v.size == 3 or v.size == 4):
-            msg = 'Orientation must be 3 euler angles or 4 wxyz quaternion'
-            raise ValueError(msg)
-        self._orien = v
-
     # ----------------   Methods   -----------------#
     def serialize(self):
         """ Returns a json friendly dictionary representation
         :rtype: dict
         """
-        d = {}
+        d = super().serialize()
         d['appearance'] = self.appearance
         d['shape'] = self.shape
-        d['dims'] = self.dimensions
+        d['dims'] = np.array(self.dimensions).tolist()
         d['volume'] = self.volume
-        d['physics'] = self.physics
-        d['position'] = self.position
-        d['orientation'] = self.orientation
+        d['shape'] = True
+        d.update(self.physics)
         return d
