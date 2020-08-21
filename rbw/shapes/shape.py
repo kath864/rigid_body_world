@@ -113,6 +113,5 @@ class Shape(KinematicObject):
         d['shape'] = self.shape
         d['dims'] = np.array(self.dimensions).tolist()
         d['volume'] = self.volume
-        d['shape'] = True
         d.update(self.physics)
         return d

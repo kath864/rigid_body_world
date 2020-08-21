@@ -9,7 +9,7 @@ import networkx as nx
 phys_keys = ['lateralFriction', 'mass', 'restitution',
              'rollingFriction', 'linearDamping']
 
-def is_phys_key(k,v):
+def is_phys_key(k):
     return (k in phys_keys)
 
 def clean_params(phys_params):
@@ -39,15 +39,16 @@ class Sim(ABC):
         self.setGravity(0, 0, -10)
 
         w_rev = w.reverse()
-        shapes = nx.subgraph_view(w_rev, filter_node = is_shape_node)
         ids = {}
-        for shape in shapes.nodes():
+        for name, node in w_rev.nodes(data = True):
+            if not 'shape' in node:
+                continue
             # load newtonian objects
-            obj = self.make_shape(shape)
+            obj = self.make_shape(node)
 
-            self.apply_force_torque(obj, w_rev.adj[shape])
+            self.apply_force_torque(obj, w_rev.adj[name])
             # record obj id
-            ids[shape['name']] = obj
+            ids[name] = obj
 
         return ids
 
@@ -75,13 +76,13 @@ class Sim(ABC):
 
     def update_obj(self, obj_id, node):
         rot = node['orientation']
-        if len(rot == 3):
+        if len(rot) == 3:
             rot = self.getQuaternionFromEuler(rot)
 
-        self.resetBasePositionAndOrientation(ob_id,
+        self.resetBasePositionAndOrientation(obj_id,
                                              posObj = node['position'],
                                              ornObj = rot)
-        self.resetBaseVelocity(ob_id,
+        self.resetBaseVelocity(obj_id,
                                linearVelocity = node['linear_velocity'],
                                angularVelocity = node['angular_velocity'])
         phys = clean_params(node)
@@ -98,8 +99,14 @@ class Sim(ABC):
 
         self.applyExternalForce(obj, -1, force, [0,0,0],
                                 self.LINK_FRAME)
-        self.applyExternalTorque(obj, -1, torque, [0,0,0],
-                                self.LINK_FRAME)
+        self.applyExternalTorque(obj, -1, torque, self.LINK_FRAME)
+
+
+    def extract_state(self, obj_id):
+        pos, quat = self.getBasePositionAndOrientation(obj_id)
+        l_vel, a_vel = self.getBaseVelocity(obj_id)
+        return {'position' : pos, 'orientation' : quat,
+                'linear_vel' : l_vel, 'angular_vel' : a_vel }
 
     # def serialize(self):
     #     return {'world' : self.world,

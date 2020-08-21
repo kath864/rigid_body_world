@@ -30,6 +30,13 @@ class World(ABC):
         """Adds objects to the world"""
         pass
 
+    def add_field(self, name, field):
+        self.graph.add_node(name, **field.serialize())
+        edges = field.apply_field(self.graph)
+        for (target, data) in edges:
+            self.graph.add_edge(name, target, **data)
+
+
     def serialize(self, indent = None):
         """
         Returns

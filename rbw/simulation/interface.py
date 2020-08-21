@@ -4,6 +4,7 @@ Implemented as functions rather than classes to facilitate cross-language suppor
 """
 from rbw import np
 from . import pybullet
+import networkx as nx
 from . import Sim
 
 import time
@@ -62,13 +63,13 @@ def update_world(sim_map, new_world):
 
 #TODO: doc me!
 def apply_state(sim, ids, state):
-    rev_ids = {value : key for key,value in ids.items()}
     w_rev = state.reverse()
-    shapes = nx.subgraph_view(w_rev, filter_node = is_shape_node)
 
-    for shape in shapes.nodes():
+    for name, node in w_rev.nodes(data = True):
+        if not 'shape' in nodes:
+            continue
         # load newtonian objects
-        obj_id = rev_ids[shape]
+        obj_id = ids[shape]
         sim.update_obj(obj_id, shape)
         self.apply_force_torque(obj_id, w_rev.adj[shape])
 
@@ -103,7 +104,7 @@ def batch_step(sim, ids, g, dur,
         # add one step to resolve any initial forces
         sim.stepSimulation()
         sim.setRealTimeSimulation(1)
-        while (1):
+        while True:
             keys = sim.getKeyboardEvents()
             print(keys)
             time.sleep(0.01)
@@ -170,40 +171,56 @@ def _step_simulation(sim, g, ids):
     sim.stepSimulation()
 
     # node updates
-    for obj_id, node in ids.items():
-        node_state = extract_state(obj_id, client)
-        state.nodes[node].update(node_state)
+    for name, obj_id in ids.items():
+        node_state = sim.extract_state(obj_id)
+        state.nodes[name].update(node_state)
 
     for c,(a,b) in enumerate(combinations(ids.keys(), 2)):
-        contact_info = sim.getContactPoints(bodya=a, bodyb=b)
-        if not contact_info[0]:
+        contact_info = sim.getContactPoints(bodyA=ids[a],
+                                            bodyB=ids[b])
+        if len(contact_info) == 0:
             continue
-        state.add_edge(ids[a], ids[b], distance = contact_info[8],
-                        force = contact_info[9])
-        contact_info = pybullet.getContactPoints(bodya=b, bodyb=a)
-        state.add_edge(ids[b], ids[a], distance = contact_info[8],
+        state.add_edge(a, b, distance = contact_info[8],
+                       force = contact_info[9])
+        contact_info = pybullet.getContactPoints(bodyA=ids[b],
+                                                 bodyB=ids[a])
+        state.add_edge(b, a, distance = contact_info[8],
                         force = contact_info[9])
     return state
 
-def _ncr(n, r):
-    r = min(r, n-r)
-    numer = reduce(op.mul, range(n, n-r, -1), 1)
-    denom = reduce(op.mul, range(1, r+1), 1)
-    return numer // denom
 
-# TODO : this is a duplicate of `Sim.update_obj`...
-def _update_obj(obj_id, params, cid):
-    if 'physics' in params:
-        params = params['physics']
-    params = clean_params(params)
-    pybullet.changeDynamics(obj_id, -1,
-                            **params,
-                            physicsClientId = cid)
+def keypoints(states):
+    current_kp = states[0]
+    n = len(states)
+    kps = {0 : (current_kp, [])}
+    for t in range(1, n):
+        g = states[t]
+        d = difference(current_kp, g)
+        if len(d.edges) > 0:
+            kps[t] = (g, list(d.edges))
+            current_kp = g
+    return kps
 
-def extract_state(obj_id, client):
-    pos, quat = pybullet.getBasePositionAndOrientation(obj_id,
-                                                       physicsClientId = client)
-    l_vel, a_vel = pybullet.getBaseVelocity(obj_id,
-                                        physicsClientId = client)
-    return {'position' : pos, 'orientation' : quat,
-            'linear_vel' : l_vel, 'angular_vel' : a_vel }
+# cribbed from https://stackoverflow.com/a/33494157
+def difference(a, b):
+    d = nx.create_empty_copy(b)
+    if set(a) != set(b):
+        raise nx.NetworkXError("Node sets of graphs is not equal")
+
+    a_edges = set(a.edges())
+    b_edges = set(b.edges())
+
+    diff_edges = b_edges ^ a_edges
+
+    if len(diff_edges) == 0:
+        return d
+
+    new_edges = b_edges - a_edges
+
+    d.add_edges_from(new_edges, delta = 'added')
+    d.add_edges_from(a_edges - b_edges, delta = 'removed')
+
+    return d
+
+
+
