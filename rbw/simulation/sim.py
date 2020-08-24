@@ -103,6 +103,18 @@ class Sim(ABC):
 
 
     def extract_state(self, obj_id):
+        """Extracts the state of an object from bullet at the current step
+
+        Parameters
+        ----------
+        obj_id : int
+            A bullet object id
+
+        Returns
+        -------
+        dict
+            position, orientation (wxyz), linear, and angular velocity (xyz)
+        """
         pos, quat = self.getBasePositionAndOrientation(obj_id)
         l_vel, a_vel = self.getBaseVelocity(obj_id)
         return {'position' : pos, 'orientation' : quat,

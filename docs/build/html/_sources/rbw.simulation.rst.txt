@@ -17,14 +17,6 @@ rbw.simulation.interface module
    :undoc-members:
    :show-inheritance:
 
-rbw.simulation.ramp\_sim module
--------------------------------
-
-.. automodule:: rbw.simulation.ramp_sim
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 rbw.simulation.sim module
 -------------------------
 

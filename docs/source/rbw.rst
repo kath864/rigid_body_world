@@ -13,6 +13,7 @@ Subpackages
    :maxdepth: 4
 
    rbw.shapes
+   rbw.fields
+   rbw.worlds
    rbw.simulation
    rbw.utils
-   rbw.worlds

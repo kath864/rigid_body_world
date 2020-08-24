@@ -9,10 +9,10 @@ rbw.worlds package
 Submodules
 ----------
 
-rbw.worlds.ramp module
-----------------------
+rbw.worlds.marble_box module
+----------------------------
 
-.. automodule:: rbw.worlds.ramp
+.. automodule:: rbw.worlds.marble_box
    :members:
    :undoc-members:
    :show-inheritance:

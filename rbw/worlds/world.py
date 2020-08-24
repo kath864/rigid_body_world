@@ -55,6 +55,27 @@ class World(ABC):
         """
         self.graph = nx.jit_graph(data)
 
+
+    def write(self, path):
+        with open(path, 'w') as f:
+            f.write(self.serialize())
+
+
+def parse_world_graph(data):
+    """ Parses a JIT-serialized string to a graph
+    Parameters
+    ----------
+    data : (str)
+        A JIT serialized message contain nodes and edge info
+
+    Returns
+    -------
+    nx.DiGraph
+        A directed graph representing the scene
+    """
+    return nx.jit_graph(data, nx.DiGraph())
+
+
 # def safe_jit_data(G, **kwargs):
 #     """Returns data in JIT JSON format.
 

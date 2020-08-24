@@ -32,7 +32,7 @@ ball.linear_velocity = [1, 0, 0]
 scene.add_object(str(c), ball, 0.0, 0.0)
 beam = BeamField(str(c), force = [1,0,0])
 
-# scene.add_field('beam', beam)
+# add a very heavy ball that acts like a wall
 wall = shapes.Ball(appearance, dims, dict(density = 100.,
                                            lateralFriction = 0.9,
                                            restitution = 0.9))
@@ -40,20 +40,14 @@ scene.add_object(str(1), wall, 1, 0.0)
 
 # run physics
 scene_data = scene.serialize(indent = 2) # data must be serialized into a `Dict`
-
-# client = simulation.init_client(debug = False) # start a server
-# sim = simulation.Sim(client)
-# ids = sim.load_graph(scene.graph)
-
-# client = simulation.init_client(debug = True) # start a server
-# states = simulation.run_full_trace(client, scene.graph, T = 5, debug = True)
-#
+graph = scene.graph # can also parse from str : worlds.parse_world_graph(scene_data)
 client = simulation.init_client(debug = False) # start a server
-states = simulation.run_full_trace(client, scene.graph, T = 5, debug = False)
+states = simulation.run_full_trace(client, graph, T = 5, debug = False)
 kps = simulation.keypoints(states)
-# print(list(scene.graph.nodes))
 pprint(kps)
 
+parsed_state = simulation.parse_state(states, ['0', '1'], 12)
+# pprint(parsed_state)
 
 # sim = simulation.init_sim(simulation.MarbleSim, scene_data, client) # load ramp into client
 # print(sim)

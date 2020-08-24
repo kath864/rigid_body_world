@@ -2,14 +2,12 @@
 
 Implemented as functions rather than classes to facilitate cross-language support.
 """
+import time
 from rbw import np
 from . import pybullet
 import networkx as nx
 from . import Sim
 
-import time
-import operator as op
-from functools import reduce
 from itertools import combinations
 
 #######################################################################
@@ -156,7 +154,75 @@ def run_full_trace(client, graph,
                       time_step = time_step, debug = debug)
 
 #######################################################################
-# Helpers
+# state reporting
+#######################################################################
+
+def keypoints(states):
+    """ The time points and graphs at moments where new contacts form or dissolve
+
+    Parameters
+    ----------
+
+    states : np.array
+        an array containing nx.digraph state representations
+
+    Returns
+    -------
+
+    dict
+        Keys represent contact change points. Values are a tuple where
+        lhs is the graph at time t, and the rhs is itself a tuple of
+        (new edges, removed edges).
+
+    """
+    current_kp = states[0]
+    n = len(states)
+    kps = {0 : (current_kp, [])}
+    for t in range(1, n):
+        g = states[t]
+        d = difference(current_kp, g)
+        if len(d) > 0:
+            kps[t] = (g, d)
+            current_kp = g
+    return kps
+
+def parse_state(states, names, hz):
+    """ Collects the states of objects in space-time
+
+    Parameters
+    ----------
+
+    states : np.array
+        an array containing nx.DiGraph state representations
+
+    names : iterable(str)
+        Nodes to collect
+
+    hz : int
+        how many collections to report per state step
+
+    Returns
+    -------
+
+    something
+    """
+    n = len(states)
+    ts = np.arange(n, step = hz)
+
+    r = {}
+    for o in names:
+        r[o] = _empty_state(len(ts))
+
+    for i,t in enumerate(ts):
+        data = states[t].nodes(data = True)
+        for o in names:
+            for k,v in data[o].items():
+                r[o][k][i] = v
+
+    return r
+
+#######################################################################
+# helpers
 #######################################################################
 
 def _step_simulation(sim, g, ids):
@@ -185,18 +251,6 @@ def _step_simulation(sim, g, ids):
     return state
 
 
-def keypoints(states):
-    current_kp = states[0]
-    n = len(states)
-    kps = {0 : (current_kp, [])}
-    for t in range(1, n):
-        g = states[t]
-        d = difference(current_kp, g)
-        if len(d) > 0:
-            kps[t] = (g, *d)
-            current_kp = g
-    return kps
-
 # cribbed from https://stackoverflow.com/a/33494157
 def difference(a, b):
     d = nx.create_empty_copy(b)
@@ -215,3 +269,11 @@ def difference(a, b):
     removed = a_edges - b_edges
 
     return (new_edges, removed)
+
+def _empty_state(t):
+    return {
+        'position' : np.empty((t, 3)),
+        'orientation' : np.empty((t, 4)),
+        'linear_vel' : np.empty((t, 3)),
+        'angular_vel' : np.empty((t, 3)),
+    }

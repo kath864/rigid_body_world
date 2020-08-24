@@ -28,7 +28,7 @@ def make_table(table_dims, table_phys):
     table.position = [0, 0, table_dims[2]*-0.5]
     g.add_node('table_top', **table.serialize())
 
-    # stair walls
+    # walls
     delta = 0.1
     exs_lr = np.array([delta, table_dims[1], 0.1])
     exs_fb = np.array([table_dims[0], delta, 0.1])

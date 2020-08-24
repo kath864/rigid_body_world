@@ -4,6 +4,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>rbw.worlds package &#8212; rbw  documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +15,8 @@
     <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="rbw.utils package" href="rbw.utils.html" />
+    <link rel="next" title="rbw.simulation package" href="rbw.simulation.html" />
+    <link rel="prev" title="rbw.shapes package" href="rbw.shapes.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -36,46 +38,63 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-rbw.worlds.ramp">
-<span id="rbw-worlds-ramp-module"></span><h2>rbw.worlds.ramp module<a class="headerlink" href="#module-rbw.worlds.ramp" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-rbw.worlds.marble_box">
+<span id="rbw-worlds-marble-box-module"></span><h2>rbw.worlds.marble_box module<a class="headerlink" href="#module-rbw.worlds.marble_box" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
-<dt id="rbw.worlds.ramp.RampWorld">
-<em class="property">class </em><code class="sig-prename descclassname">rbw.worlds.ramp.</code><code class="sig-name descname">RampWorld</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">table_dims</span></em>, <em class="sig-param"><span class="n">ramp_dims</span></em>, <em class="sig-param"><span class="n">objects</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ramp_angle</span><span class="o">=</span><span class="default_value">0.0</span></em>, <em class="sig-param"><span class="n">table_phys</span><span class="o">=</span><span class="default_value">{'density': 0.0, 'lateralFriction': 0.2}</span></em>, <em class="sig-param"><span class="n">ramp_phys</span><span class="o">=</span><span class="default_value">{'density': 0.0, 'lateralFriction': 0.2}</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/worlds/ramp.html#RampWorld"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.worlds.ramp.RampWorld" title="Permalink to this definition">¶</a></dt>
+<dt id="rbw.worlds.marble_box.MarbleWorld">
+<em class="property">class </em><code class="sig-prename descclassname">rbw.worlds.marble_box.</code><code class="sig-name descname">MarbleWorld</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">table_dims</span></em>, <em class="sig-param"><span class="n">table_phys</span><span class="o">=</span><span class="default_value">{'density': 0.0, 'lateralFriction': 0.2}</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/worlds/marble_box.html#MarbleWorld"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.worlds.marble_box.MarbleWorld" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#rbw.worlds.world.World" title="rbw.worlds.world.World"><code class="xref py py-class docutils literal notranslate"><span class="pre">rbw.worlds.world.World</span></code></a></p>
-<p>Describes a ramp scene</p>
-<dl class="py method">
-<dt id="rbw.worlds.ramp.RampWorld.add_object">
-<code class="sig-name descname">add_object</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">place</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/worlds/ramp.html#RampWorld.add_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.worlds.ramp.RampWorld.add_object" title="Permalink to this definition">¶</a></dt>
-<dd><p>Adds objects to the world</p>
+<p>Describes a table with marbles</p>
+<dl class="py attribute">
+<dt id="rbw.worlds.marble_box.MarbleWorld.table">
+<code class="sig-name descname">table</code><a class="headerlink" href="#rbw.worlds.marble_box.MarbleWorld.table" title="Permalink to this definition">¶</a></dt>
+<dd><p>The geometry and physical parameters of the table</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>rbw.shapes.Block</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="rbw.worlds.ramp.RampWorld.initial_pos">
-<em class="property">property </em><code class="sig-name descname">initial_pos</code><a class="headerlink" href="#rbw.worlds.ramp.RampWorld.initial_pos" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="rbw.worlds.ramp.RampWorld.objects">
-<em class="property">property </em><code class="sig-name descname">objects</code><a class="headerlink" href="#rbw.worlds.ramp.RampWorld.objects" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a <cite>dict</cite> of added objects</p>
+<dt id="rbw.worlds.marble_box.MarbleWorld.add_object">
+<code class="sig-name descname">add_object</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/worlds/marble_box.html#MarbleWorld.add_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.worlds.marble_box.MarbleWorld.add_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Places objects on the table</p>
+<p>Objects will be placed directly on the table’s surface.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – The key to reference the object</p></li>
+<li><p><strong>obj</strong> (<em>rbw.shapes.Shape</em>) – Object to add to table</p></li>
+<li><p><strong>x</strong> (<cite>float</cite>) – </p></li>
+<li><p><strong>x location of the object.</strong> (<em>The</em>) – </p></li>
+<li><p><strong>y</strong> (<cite>float</cite>) – </p></li>
+<li><p><strong>y location of the object.</strong> (<em>The</em>) – </p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="rbw.worlds.ramp.RampWorld.serialize">
-<code class="sig-name descname">serialize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/worlds/ramp.html#RampWorld.serialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.worlds.ramp.RampWorld.serialize" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a json-serialized context of the world</p>
+<dt id="rbw.worlds.marble_box.MarbleWorld.graph">
+<em class="property">property </em><code class="sig-name descname">graph</code><a class="headerlink" href="#rbw.worlds.marble_box.MarbleWorld.graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns: The undirected graph describing the world
+:rtype: nx.Graph</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py function">
-<dt id="rbw.worlds.ramp.default_ramp">
-<code class="sig-prename descclassname">rbw.worlds.ramp.</code><code class="sig-name descname">default_ramp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/worlds/ramp.html#default_ramp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.worlds.ramp.default_ramp" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="rbw.worlds.marble_box.default_box">
+<code class="sig-prename descclassname">rbw.worlds.marble_box.</code><code class="sig-name descname">default_box</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/worlds/marble_box.html#default_box"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.worlds.marble_box.default_box" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a default empty marble world.</p>
+<p>The default marble world with a table of <cite>table_dims</cite>
+and physics of <cite>default_phys</cite>.</p>
+</dd></dl>
 
 <dl class="py function">
-<dt id="rbw.worlds.ramp.pct_to_coord">
-<code class="sig-prename descclassname">rbw.worlds.ramp.</code><code class="sig-name descname">pct_to_coord</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mag</span></em>, <em class="sig-param"><span class="n">angle</span></em>, <em class="sig-param"><span class="n">z</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/worlds/ramp.html#pct_to_coord"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.worlds.ramp.pct_to_coord" title="Permalink to this definition">¶</a></dt>
+<dt id="rbw.worlds.marble_box.make_table">
+<code class="sig-prename descclassname">rbw.worlds.marble_box.</code><code class="sig-name descname">make_table</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">table_dims</span></em>, <em class="sig-param"><span class="n">table_phys</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/worlds/marble_box.html#make_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.worlds.marble_box.make_table" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -86,24 +105,64 @@
 <em class="property">class </em><code class="sig-prename descclassname">rbw.worlds.world.</code><code class="sig-name descname">World</code><a class="reference internal" href="_modules/rbw/worlds/world.html#World"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.worlds.world.World" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
 <dl class="py method">
+<dt id="rbw.worlds.world.World.add_field">
+<code class="sig-name descname">add_field</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">field</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/worlds/world.html#World.add_field"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.worlds.world.World.add_field" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt id="rbw.worlds.world.World.add_object">
 <em class="property">abstract </em><code class="sig-name descname">add_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/worlds/world.html#World.add_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.worlds.world.World.add_object" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds objects to the world</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="rbw.worlds.world.World.graph">
+<em class="property">abstract property </em><code class="sig-name descname">graph</code><a class="headerlink" href="#rbw.worlds.world.World.graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns: The undirected graph describing the world
+:rtype: nx.Graph</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="rbw.worlds.world.World.load">
+<code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/worlds/world.html#World.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.worlds.world.World.load" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>str</em>) – JIT data to load</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="rbw.worlds.world.World.objects">
-<em class="property">abstract property </em><code class="sig-name descname">objects</code><a class="headerlink" href="#rbw.worlds.world.World.objects" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a <cite>dict</cite> of added objects</p>
+<em class="property">property </em><code class="sig-name descname">objects</code><a class="headerlink" href="#rbw.worlds.world.World.objects" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns: Object nodes
+:rtype: dict</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="rbw.worlds.world.World.serialize">
-<em class="property">abstract </em><code class="sig-name descname">serialize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/worlds/world.html#World.serialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.worlds.world.World.serialize" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a json-serialized context of the world</p>
+<code class="sig-name descname">serialize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">indent</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/worlds/world.html#World.serialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.worlds.world.World.serialize" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a json-serialized JIT parsing of the world graph</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
 </dd></dl>
 
+<dl class="py method">
+<dt id="rbw.worlds.world.World.write">
+<code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/worlds/world.html#World.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.worlds.world.World.write" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
+
+<dl class="py function">
+<dt id="rbw.worlds.world.parse_world_graph">
+<code class="sig-prename descclassname">rbw.worlds.world.</code><code class="sig-name descname">parse_world_graph</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rbw/worlds/world.html#parse_world_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rbw.worlds.world.parse_world_graph" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </div>
 </div>
@@ -131,9 +190,9 @@
 <li class="toctree-l1 current"><a class="reference internal" href="rbw.html">rbw package</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="rbw.html#subpackages">Subpackages</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="rbw.shapes.html">rbw.shapes package</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">rbw.worlds package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="rbw.simulation.html">rbw.simulation package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="rbw.utils.html">rbw.utils package</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">rbw.worlds package</a></li>
 </ul>
 </li>
 </ul>
@@ -145,7 +204,8 @@
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
   <li><a href="rbw.html">rbw package</a><ul>
-      <li>Previous: <a href="rbw.utils.html" title="previous chapter">rbw.utils package</a></li>
+      <li>Previous: <a href="rbw.shapes.html" title="previous chapter">rbw.shapes package</a></li>
+      <li>Next: <a href="rbw.simulation.html" title="next chapter">rbw.simulation package</a></li>
   </ul></li>
   </ul></li>
 </ul>
@@ -176,7 +236,7 @@
       &copy;2020, Mario Belledonne.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
