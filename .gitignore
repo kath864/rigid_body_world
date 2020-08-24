@@ -4,8 +4,8 @@
 *.egg-info
 
 # docs
-doc/build
-doc/_index.rst
+docs/build
+docs/_index.rst
 
 # miscellaneous
 __pycache__
