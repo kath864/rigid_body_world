@@ -29,26 +29,26 @@ def make_table(table_dims, table_phys):
     g.add_node('table_top', **table.serialize())
 
     # stair walls
-    delta = 0.01
-    exs_lr = np.array([delta, table_dims[1], table_dims[2] * 1.1]) * 0.5
-    exs_fb = np.array([table_dims[0], delta, table_dims[2] * 1.1]) * 0.5
+    delta = 0.1
+    exs_lr = np.array([delta, table_dims[1], 0.1])
+    exs_fb = np.array([table_dims[0], delta, 0.1])
 
-    pos_left =  table_dims * np.array([-0.5, 0, 0.5]) - np.array([delta, 0, 0])
+    pos_left =  table_dims * np.array([-0.5, 0, 0]) - np.array([delta, 0, 0])
     wall_left = Block('table', exs_lr, table_phys)
     wall_left.position = pos_left
     g.add_node('table_wall_left', **wall_left.serialize())
 
-    pos_right =  table_dims * np.array([0.5, 0, 0.5]) + np.array([delta, 0, 0])
+    pos_right =  table_dims * np.array([0.5, 0, 0]) + np.array([delta, 0, 0])
     wall_right = Block('table', exs_lr, table_phys)
     wall_right.position = pos_right
     g.add_node('table_wall_right', **wall_right.serialize())
 
-    pos_front =  table_dims * np.array([0.0, 0.5, 0.5])
+    pos_front =  table_dims * np.array([0.0, 0.5, 0])
     wall_front = Block('table', exs_fb, table_phys)
     wall_front.position = pos_front
     g.add_node('table_wall_front', **wall_front.serialize())
 
-    pos_back =  table_dims * np.array([0.0, -0.5, 0.5])
+    pos_back =  table_dims * np.array([0.0, -0.5, 0])
     wall_back = Block('table', exs_fb, table_phys)
     wall_back.position = pos_back
     g.add_node('table_wall_back', **wall_back.serialize())

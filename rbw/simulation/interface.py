@@ -46,30 +46,25 @@ def init_sim(sim, graph, cid):
     """
     pass
 
-def update_world(sim_map, new_world):
+def update_world(sim, ids, new_world):
     """ Updates the world's physical parameters
 
     :param client: Pybullet client id
     :param object_map: The object name -> object id `dict`
     :new_world: A serialized scene containing new physical properties
     """
-    client = sim_map['client']
-    obj_map = sim_map['world']
-    for obj_key, obj_id in obj_map.items():
-        if obj_key in new_world:
-            params = new_world[obj_key]
-            _update_obj(obj_id, params, client)
+    for name, node in new_world.nodes(data = True):
+        sim.update_object(ids[name], node)
 
 
 #TODO: doc me!
 def apply_state(sim, ids, state):
     w_rev = state.reverse()
-
     for name, node in w_rev.nodes(data = True):
         if not 'shape' in nodes:
             continue
         # load newtonian objects
-        obj_id = ids[shape]
+        obj_id = ids[name]
         sim.update_obj(obj_id, shape)
         self.apply_force_torque(obj_id, w_rev.adj[shape])
 
@@ -98,15 +93,14 @@ def batch_step(sim, ids, g, dur,
 
     n_objs = len(ids)
 
-    (prev_state is None) or apply_state(sim, ids, prev_state)
+    if not (prev_state is None):
+        apply_state(sim, ids, prev_state)
 
     if debug:
         # add one step to resolve any initial forces
         sim.stepSimulation()
         sim.setRealTimeSimulation(1)
         while True:
-            keys = sim.getKeyboardEvents()
-            print(keys)
             time.sleep(0.01)
         return
 
@@ -180,10 +174,12 @@ def _step_simulation(sim, g, ids):
                                             bodyB=ids[b])
         if len(contact_info) == 0:
             continue
+        contact_info = contact_info[0]
         state.add_edge(a, b, distance = contact_info[8],
                        force = contact_info[9])
         contact_info = pybullet.getContactPoints(bodyA=ids[b],
                                                  bodyB=ids[a])
+        contact_info = contact_info[0]
         state.add_edge(b, a, distance = contact_info[8],
                         force = contact_info[9])
     return state
@@ -196,8 +192,8 @@ def keypoints(states):
     for t in range(1, n):
         g = states[t]
         d = difference(current_kp, g)
-        if len(d.edges) > 0:
-            kps[t] = (g, list(d.edges))
+        if len(d) > 0:
+            kps[t] = (g, *d)
             current_kp = g
     return kps
 
@@ -213,14 +209,9 @@ def difference(a, b):
     diff_edges = b_edges ^ a_edges
 
     if len(diff_edges) == 0:
-        return d
+        return tuple()
 
     new_edges = b_edges - a_edges
+    removed = a_edges - b_edges
 
-    d.add_edges_from(new_edges, delta = 'added')
-    d.add_edges_from(a_edges - b_edges, delta = 'removed')
-
-    return d
-
-
-
+    return (new_edges, removed)

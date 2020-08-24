@@ -9,8 +9,8 @@ import networkx as nx
 phys_keys = ['lateralFriction', 'mass', 'restitution',
              'rollingFriction', 'linearDamping']
 
-def is_phys_key(k):
-    return (k in phys_keys)
+def is_phys_key(kv):
+    return (kv[0] in phys_keys)
 
 def clean_params(phys_params):
     return dict(filter(is_phys_key, phys_params.items()))
@@ -97,8 +97,8 @@ class Sim(ABC):
             force += e['force']
             torque += e['torque']
 
-        self.applyExternalForce(obj, -1, force, [0,0,0],
-                                self.LINK_FRAME)
+        f = self.applyExternalForce(obj, -1, force, [0,0,0],
+                                    self.LINK_FRAME)
         self.applyExternalTorque(obj, -1, torque, self.LINK_FRAME)
 
 
