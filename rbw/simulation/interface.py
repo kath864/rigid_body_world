@@ -76,7 +76,8 @@ def apply_state(sim_map, key_order, state):
 
 def step_trace(client, sim, dur, time_step = 240, fps = 60,
                time_scale = 1.0, prev_state = None, debug = False,
-               ret_col = True):
+               ret_col = True,
+               **eng_kwargs):
     """Obtains sim state from simulation.
 
     Currently returns the position of each rigid body.
@@ -89,9 +90,11 @@ def step_trace(client, sim, dur, time_step = 240, fps = 60,
         fps (int, optional): Number of frames to report per second.
     """
     pybullet.setPhysicsEngineParameter(
-        enableFileCaching = 0,
-        fixedTimeStep = 1/time_step,
-        physicsClientId = client
+        # enableFileCaching = 0,
+        # fixedTimeStep = 1/time_step,
+        # solverResidualThreshold = 1e-8, # default is 1e-7
+        physicsClientId = client,
+        **eng_kwargs
     )
 
     # Configure time steps
@@ -160,20 +163,22 @@ def clear_client(cid):
     pybullet.disconnect(physicsClientId=cid)
 
 def run_mc_trace(sim_map, state = None, fps = 60,
-                 time_scale = 1.0):
+                 time_scale = 1.0, **eng_kwargs):
     client = sim_map['client']
     world = sim_map['world']
     state = step_trace(client, world, 1./fps,
                        fps = fps, state = state,
                        time_scale = time_scale,
-                       ret_col = False)
+                       ret_col = False,
+                       **eng_kwargs)
     return state[-1]
 
 def run_full_trace(sim_map,
                    T = 1.0,
                    fps = 60,
                    time_scale = 1.0,
-                   debug = False):
+                   debug = False,
+                   **eng_kwargs):
     """ Runs pybullet on on given scene
     Frames per second are fixed at 60
     If no objects are given, then the top keys of
@@ -189,7 +194,10 @@ def run_full_trace(sim_map,
     client = sim_map['client']
     world = sim_map['world']
     return step_trace(client, world, T,
-                      fps = fps, time_scale = time_scale, debug = debug)
+                      fps = fps,
+                      time_scale = time_scale,
+                      debug = debug,
+                      **eng_kwargs)
 
 #######################################################################
 # Helpers
