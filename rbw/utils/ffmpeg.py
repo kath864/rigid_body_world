@@ -72,7 +72,7 @@ def run_cmd(cmds):
         print(cmd)
         subprocess.run(cmd, check=False, shell = True, executable='/bin/bash' )
 
-def continous_movie(source, out, fps = 60, vframes = None):
+def continuous_movie(source, out, fps = 60, vframes = None):
     cmd = continous(source, out + '.mp4', 0, vframes, fps)
     run_cmd([cmd])
 
