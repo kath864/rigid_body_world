@@ -21,14 +21,22 @@ def render(**kwargs):
         out += kwargs['out']
     if not os.path.isdir(out):
         os.mkdir(out)
-    t_path = os.path.join(out, 'trace.json')
-    src_path = os.path.join(out, 'scene.json')
-    with open(t_path, 'w') as temp:
-        json.dump(kwargs.pop('trace'), temp,
-                  cls = NpEncoder)
-    with open(src_path, 'w') as temp:
-        json.dump(kwargs.pop('scene'), temp,
-                  cls = NpEncoder)
+
+    if isinstance(kwargs['trace'], str):
+        t_path = kwargs.pop('trace')
+    else:
+        t_path = os.path.join(out, 'trace.json')
+        with open(t_path, 'w') as temp:
+            json.dump(kwargs.pop('trace'), temp,
+                    cls = NpEncoder)
+
+    if isinstance(kwargs['scene'], str):
+        src_path = kwargs.pop('scene')
+    else:
+        src_path = os.path.join(out, 'scene.json')
+        with open(src_path, 'w') as temp:
+            json.dump(kwargs.pop('scene'), temp,
+                    cls = NpEncoder)
 
     if 'exec' in kwargs:
         blend_exec = kwargs.pop('exec')
