@@ -22,9 +22,11 @@ ramp.add_object('B', table_obj, 0.3)
 # run physics
 ramp_data = ramp.serialize() # data must be serialized into a `Dict`
 pprint(ramp_data)
-client = simulation.init_client(debug = True) # start a server
+client = simulation.init_client(debug = False) # start a server
 sim = simulation.init_sim(simulation.RampSim, ramp_data, client) # load ramp into client
 
-trace, cols = simulation.run_full_trace(client, sim, debug = True) # run simulation
-print(trace.shape)
-simulation.clear_trace(client)
+# pla (steps x 3 x objects x 3) : position, linear, angular vel
+# rot (steps x objects x 4) : quaternions
+# col (steps x objects) : collision count
+pla, rot, col = simulation.run_full_trace(sim, debug = False) # run simulation
+simulation.clear_sim(sim) # clean up simulator environment
