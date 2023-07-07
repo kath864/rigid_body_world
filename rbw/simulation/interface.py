@@ -49,7 +49,7 @@ def update_world(sim_map, new_world):
             _update_obj(obj_id, params, client)
 
 
-def apply_state(sim_map, key_order, state):
+def apply_state(client, obj_map, key_order, state):
     """ Applies a state matrix to each object reported
 
     The expected dimensions of state are obsxSTATE
@@ -60,8 +60,6 @@ def apply_state(sim_map, key_order, state):
     :param object_ids: A list of ids corresponding objects in `state`
     :param state: A tuple of position, rotation, angular velocity and linear velocity for each object.
     """
-    client = sim_map['client']
-    obj_map = sim_map['world']
     ((positions, ang_vel, lin_vel), rotations) = state
     for i, obj_key in enumerate(key_order):
         ob_id = obj_map[obj_key]
@@ -100,12 +98,12 @@ def step_trace(client, sim, dur, time_step = 240, fps = 60,
     # Configure time steps
     dt = 1.0 / fps * time_scale
     frames = int(np.floor(dur * fps))
-
-    object_ids = [sim[k] for k in sorted(sim.keys())]
+    ordered_obj_keys = list(sorted(sim.keys()))
+    object_ids = [sim[k] for k in ordered_obj_keys]
     n_objs = len(object_ids)
 
     if not prev_state is None:
-        apply_state(client, object_ids, prev_state)
+        apply_state(client, sim, ordered_obj_keys, prev_state)
 
 
     # position (x,y,z), linear velocity (x,y,z),
@@ -122,6 +120,8 @@ def step_trace(client, sim, dur, time_step = 240, fps = 60,
         pybullet.setRealTimeSimulation(1, physicsClientId = client)
         while (1):
             keys = pybullet.getKeyboardEvents()
+            if len(keys) > 0:
+                break
             print(keys)
             time.sleep(0.01)
         return
@@ -162,12 +162,43 @@ def clear_client(cid):
     """Clean up connection if not already done."""
     pybullet.disconnect(physicsClientId=cid)
 
+
+def run_trace(sim:dict, 
+              prev_state:tuple = None, 
+              dur:float = 1.0,
+              fps:int = 60,
+              time_scale:float = 1.0,
+              debug:bool = False,
+              **eng_kwargs):
+    """ Runs pybullet on on given scene
+    
+    # Arguments
+    :param sim: contains the object to bullet id mappings as well as client id
+    :param prev_state,optional: Previous state to resume `(pal, rotations)`
+    :param dur,optional: The duration in seconds to simulate.  -1 denotes last frame
+    :param fps,optional: The rate at which to report state.
+    :param time_scale,optional: The time scale factor
+    :param debug,optional: Whether to run with debug visualization
+    """
+    client = sim['client']
+    world = sim['world']
+    if dur == -1:
+        dur = 1.0 / fps
+    
+    state = step_trace(client, world, dur,
+                       fps = fps, prev_state = prev_state,
+                       time_scale = time_scale,
+                       debug=debug,
+                       **eng_kwargs)
+    return state
+
+# TODO: depricate these
 def run_mc_trace(sim_map, state = None, fps = 60,
                  time_scale = 1.0, **eng_kwargs):
     client = sim_map['client']
     world = sim_map['world']
     state = step_trace(client, world, 1./fps,
-                       fps = fps, state = state,
+                       fps = fps, prev_state = state,
                        time_scale = time_scale,
                        ret_col = False,
                        **eng_kwargs)
