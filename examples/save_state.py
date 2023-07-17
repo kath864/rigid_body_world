@@ -42,10 +42,20 @@ ckpt_2 = simulation.run_trace(sim, prev_state = ckpt_1, debug = True)
 new_world = {'A' : {'mass' : 3}} # Update mass to 3 (or desired value)
 simulation.update_world(sim, new_world)
 
-# Print the mass values after the fork point (testing to see if new mass is being made)
-object_id = 'A'
-new_mass = pb.getDynamicsInfo(object_id, -1)
-print(f"Mass of the object: {new_mass[0]}")
+# Update mass and run the second trace
+simulation.update_world(sim, new_world)
+ckpt_3 = simulation.run_trace(sim, prev_state=ckpt_1, debug=True)
+
+# Compare ckpt_2 and ckpt_3
+if ckpt_2 == ckpt_3:
+    print("ckpt_2 and ckpt_3 are identical")
+else:
+    print("ckpt_2 and ckpt_3 differ")
+
+# More specific comparison
+for i in range(len(ckpt_2)):
+    if ckpt_2[i] != ckpt_3[i]:
+        print(f"ckpt_2 and ckpt_3 differ at index {i}: {ckpt_2[i]} vs {ckpt_3[i]}")
 
 # Run a trace using ckpt_1 and the updated world configuration
 ckpt_3 = simulation.run_trace(sim, prev_state=ckpt_1, debug=True)
