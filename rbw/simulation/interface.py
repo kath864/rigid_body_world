@@ -165,7 +165,7 @@ def clear_client(cid):
 
 def run_trace(sim:dict, 
               prev_state:tuple = None, 
-              dur:float = 2.0,
+              dur:float = 0.5,
               fps:int = 60,
               time_scale:float = 1.0,
               debug:bool = False,
