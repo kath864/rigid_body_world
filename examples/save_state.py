@@ -35,7 +35,7 @@ def code_old_api():
     # pla (steps x 3 x objects x 3) : position, linear, angular vel
     # rot (steps x objects x 4) : quaternions
     # col (steps x objects) : collision count
-    pla, rot, col = simulation.run_trace(sim, debug = debug) # run simulation starting at ckpt_1
+    pla, rot, col = simulation.run_trace(sim, prev_state=ckpt_1, debug = debug) # run simulation starting at ckpt_1
     ckpt_2 = (pla[-1], rot[-1])
 
     # Create new configuration with updated mass for object A
@@ -43,16 +43,16 @@ def code_old_api():
     simulation.update_world(sim, new_world)
 
     # Update mass and run the second trace 
-    pla, rot, col = simulation.run_trace(sim, debug = debug) # run simulation
     ckpt_3 = (pla[-1], rot[-1])
+    print(ckpt_3)
 
     # Find positions at the last timestep
     pos_ckpt2 = ckpt_2[0][-1, 0, 0]
     pos_ckpt3 = ckpt_3[0][-1, 0, 1]
-
-    # Compute L2 distance
-    l2_distance = np.linalg.norm(pos_ckpt2 - pos_ckpt3)
-    return ckpt_2, l2_distance
+    pos_ckpt2_objectA = ckpt_2[0][-1, 0]
+    print(f"Old API object A position at ckpt_2: {pos_ckpt2_objectA}")
+    pos_ckpt3_objectA = ckpt_3[0][-1, 1]
+    print(f"Old API object A position at ckpt_3: {pos_ckpt3_objectA}")
 
 
 def code_new_api():
@@ -70,42 +70,16 @@ def code_new_api():
     # Find positions at the last timestep
     pos_ckpt2 = ckpt_2[0][-1, 0, 0]
     pos_ckpt3 = ckpt_3[0][-1, 0, 1]
-
-    # Compute L2 distance
-    l2_distance = np.linalg.norm(pos_ckpt2 - pos_ckpt3)
-    return ckpt_2, l2_distance
-
+    pos_ckpt2_objectA = ckpt_2[0][-1, 0]
+    print(f"New API Position at ckpt_2: {pos_ckpt2_objectA}")
+    pos_ckpt3_objectA = ckpt_3[0][-1, 1]
+    print(f"New API Position at ckpt_3: {pos_ckpt3_objectA}")
 
 #how fast old API is vs saveState
-time_old_api = timeit.timeit(code_old_api, number=10000)
-time_new_api = timeit.timeit(code_new_api, number=10000)
+time_old_api = timeit.timeit(code_old_api, number=10)
+time_new_api = timeit.timeit(code_new_api, number=10)
 print(f"Time for old API: {time_old_api}")
 print(f"Time for new API: {time_new_api}")
-
-#checking ckpt_2 and distance
-# For old API
-pla_old_list = []
-l2_distance_old_list = []
-for _ in range(10000):
-    ckpt_2, l2_distance = code_old_api()
-    pla_old_list.append(ckpt_2[0])
-    l2_distance_old_list.append(l2_distance)
-avg_pla_old = np.mean(pla_old_list)
-avg_l2_distance_old = np.mean(l2_distance_old_list)
-print(f"Average ckpt_2 position for old API: {avg_pla_old}")
-print(f"Average L2 distance for old API: {avg_l2_distance_old}")
-
-# For new API
-pla_new_list = []
-l2_distance_new_list = []
-for _ in range(10000):
-    ckpt_2, l2_distance = code_new_api()
-    pla_new_list.append(ckpt_2[0])
-    l2_distance_new_list.append(l2_distance)
-avg_pla_new = np.mean(pla_new_list)
-avg_l2_distance_new = np.mean(l2_distance_new_list)
-print(f"Average ckpt_2 position for new API: {avg_pla_new}")
-print(f"Average L2 distance for new API: {avg_l2_distance_new}")
 
 # Clean up simulator environment
 simulation.clear_sim(sim)
